@@ -1,0 +1,53 @@
+name: djassa_user
+description: Djassa for customers - find a maquis, find the on-duty pharmacy, pay with mobile money, earn loyalty points.
+publish_to: none
+
+# versionCode+versionName. Bump the build number on every release build.
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.5.2
+
+# Same rule as the merchant app: every dependency costs download size and
+# attack surface on an entry-level handset. Justify each one here.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management. No codegen.
+  flutter_riverpod: ^2.5.1
+
+  # Access token storage in the Android Keystore, never in SharedPreferences.
+  flutter_secure_storage: ^9.2.2
+
+  # HTTP with explicit timeouts. Thinner than dio, enough for a few endpoints.
+  http: ^1.2.2
+
+  # Opens the dialer on a pharmacy's number. Calling the on-duty pharmacy at
+  # 2 a.m. before crossing the city is the whole point of that screen.
+  url_launcher: ^6.3.0
+
+  # Scans the merchant's payment QR. Built with the unbundled ML Kit model
+  # (android/gradle.properties), so the scanner comes from Google Play
+  # services instead of adding ~3MB to the APK.
+  mobile_scanner: ^6.0.11
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  # Icons on. Release builds tree-shake the Material icon font down to the
+  # glyphs actually used (a few KB), so the old 1.6MB objection does not apply.
+  uses-material-design: true
+
+  # The site's display face, for titles and big numerals only (~70KB per
+  # style). It is what makes the app read as the same brand as djassa-Web.
+  # SIL Open Font License, see assets/fonts/OFL.txt.
+  fonts:
+    - family: InstrumentSerif
+      fonts:
+        - asset: assets/fonts/InstrumentSerif-Regular.ttf
+        - asset: assets/fonts/InstrumentSerif-Italic.ttf
+          style: italic
