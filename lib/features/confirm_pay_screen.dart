@@ -293,8 +293,10 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
               child: Row(children: [
                 const Icon(Icons.stars_rounded, color: DjassaColors.green),
                 const SizedBox(width: 10),
-                Text('${Strings.youWillEarn} $points ${Strings.points}',
-                    style: const TextStyle(fontWeight: FontWeight.w800, color: DjassaColors.green, fontSize: 15)),
+                Expanded(
+                  child: Text('${Strings.youWillEarn} $points ${Strings.points}',
+                      style: const TextStyle(fontWeight: FontWeight.w800, color: DjassaColors.green, fontSize: 15)),
+                ),
               ]),
             ),
           const SizedBox(height: 14),

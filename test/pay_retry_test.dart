@@ -1,10 +1,11 @@
 import 'package:djassa_user/core/djassa_api.dart';
 import 'package:djassa_user/core/model/payment.dart';
+import 'package:djassa_user/core/model/deal.dart';
 import 'package:djassa_user/core/model/venue.dart';
 import 'package:djassa_user/core/net/api_client.dart';
 import 'package:djassa_user/core/net/api_exception.dart';
 import 'package:djassa_user/core/providers.dart';
-import 'package:djassa_user/features/pay_screen.dart';
+import 'package:djassa_user/features/confirm_pay_screen.dart';
 import 'package:djassa_user/l10n/strings.dart';
 import 'package:djassa_user/ui/theme.dart';
 import 'package:flutter/material.dart';
@@ -27,19 +28,19 @@ class _FlakyApi extends DjassaApi {
 
   @override
   Future<Payment> pay({
-    required int venueId,
-    required int amount,
+    required String payCode,
+    int? amount,
     required Wallet wallet,
     required String payerPhone,
     required String idempotencyKey,
   }) async {
     keys.add(idempotencyKey);
-    amounts.add(amount);
+    amounts.add(amount!);
     if (keys.length == 1) throw const NetworkException('timeout');
     return Payment(
       id: 1,
-      venueId: venueId,
-      venueName: 'Maquis',
+      venueId: _target.venueId,
+      venueName: _target.name,
       amount: amount,
       walletProvider: wallet.wire,
       status: 'succeeded',
@@ -49,14 +50,17 @@ class _FlakyApi extends DjassaApi {
   }
 }
 
-const _venue = Venue(
-  id: 7,
-  category: 'maquis',
+/// A venue's static QR, as the server resolved it: the customer types the amount.
+const _target = PayTarget(
+  code: 'ABCDEFGHJK',
+  venueId: 7,
   name: 'Maquis Test',
   commune: 'Cocody',
-  pointsPer100: 1,
-  acceptsPayment: true,
+  category: 'maquis',
   isSample: true,
+  pointsPer100: 1,
+  payoutProvider: 'wave',
+  payoutAccountMasked: '••••0001',
 );
 
 void main() {
@@ -68,30 +72,33 @@ void main() {
     final api = _FlakyApi();
     await tester.pumpWidget(ProviderScope(
       overrides: [djassaApiProvider.overrideWithValue(api)],
-      child: MaterialApp(theme: djassaTheme(), home: const PayScreen(venue: _venue)),
+      child: MaterialApp(theme: djassaTheme(), home: const ConfirmPayScreen(target: _target)),
     ));
 
     await tester.enterText(find.byKey(const Key('pay-amount')), '5000');
     await tester.enterText(find.byKey(const Key('pay-phone')), '07 12 34 56 78');
-    await tester.ensureVisible(find.text(Strings.confirmPay));
-    await tester.tap(find.text(Strings.confirmPay));
+    await tester.pump();
+    // The bottom button, then the explicit "yes" in the summary sheet.
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(Strings.sheetConfirm));
     await tester.pumpAndSettle();
 
-    expect(api.keys, hasLength(1), reason: 'the confirm tap reached the API');
+    expect(api.keys, hasLength(1), reason: 'the confirmation reached the API');
     // Outcome unknown: the customer is told they won't be charged twice,
     // and the amount can no longer be edited.
     expect(find.text(Strings.payNetworkError), findsOneWidget);
     final amountField = tester.widget<TextField>(find.byKey(const Key('pay-amount')));
     expect(amountField.enabled, isFalse);
 
-    await tester.ensureVisible(find.text(Strings.retry));
+    // Retrying skips the sheet: this payment was already confirmed once.
     await tester.tap(find.text(Strings.retry));
     await tester.pumpAndSettle();
 
     expect(api.keys, hasLength(2));
     expect(api.keys[0], api.keys[1], reason: 'same key => server returns the first payment');
     expect(api.amounts, [5000, 5000]);
-    expect(find.text(Strings.paymentDone), findsOneWidget);
+    expect(find.text(Strings.paymentDone.toUpperCase()), findsOneWidget, reason: 'receipt shown');
   });
 
   test('each new payment gets a fresh 128-bit key', () {
@@ -119,5 +126,15 @@ void main() {
     expect(v.rewards.single.costPoints, 60);
     expect(v.dutyEndsAt, isNotNull);
     expect(v.myPoints, 12);
+  });
+
+  test('deal badge percent comes from the prices when not stated', () {
+    final d = Deal.fromJson({
+      'id': 1, 'venue_id': 2, 'venue_name': 'V', 'venue_category': 'mode', 'venue_commune': 'Plateau',
+      'title': 'Pagne', 'price': 7500, 'original_price': 10000,
+      'ends_at': '2026-10-04T08:00:00', 'is_featured': true, 'is_sample': true,
+    });
+    expect(d.effectivePercent, 25);
+    expect(d.isFeatured, isTrue);
   });
 }
