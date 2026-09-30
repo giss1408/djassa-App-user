@@ -5,6 +5,16 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Release signing is read from android/key.properties (gitignored; written by
+// CI from secrets, see .github/workflows/release.yml). Without it a release
+// build is unsigned on purpose: never the debug key, whose public keystore
+// would let anyone publish an "update" that replaces this app on a phone.
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "ci.djassa.djassa_user"
     // mobile_scanner 6 (CameraX 1.5) compiles against API 36; Flutter 3.24's
@@ -23,10 +33,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "ci.djassa.djassa_user"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         // 23: CameraX 1.5 (mobile_scanner) requires Android 6+.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
@@ -34,12 +41,48 @@ android {
         versionName = flutter.versionName
     }
 
+    // One APK per ABI keeps each download small on a prepaid bundle; the
+    // universal APK is for anyone unsure which phone they have. Shared by a
+    // link on WhatsApp (see djassa-Web /app).
+    splits {
+        abi {
+            enable = true
+            reset()
+            include "armeabi-v7a", "arm64-v8a"
+            universalApk = true
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"]
+                keyPassword = keystoreProperties["keyPassword"]
+                storeFile = keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+                storePassword = keystoreProperties["storePassword"]
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig = keystorePropertiesFile.exists() ? signingConfigs.release : null
+            // No customer handset is x86; debug builds keep every ABI so the
+            // emulator still works.
+            ndk {
+                abiFilters "armeabi-v7a", "arm64-v8a"
+            }
+            // Never ship a debuggable release.
+            debuggable = false
+            // Code shrinking stays off for now: the camera/QR stack
+            // (mobile_scanner, ML Kit) needs keep rules that have not been
+            // written and tested yet.
         }
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

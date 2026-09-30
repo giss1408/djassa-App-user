@@ -98,10 +98,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
             controller: _controller,
             scanWindow: window,
             onDetect: _onDetect,
-            errorBuilder: (context, error, _) => Center(
+            errorBuilder: (context, error, _) => const Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Text(Strings.cameraDenied, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                padding: EdgeInsets.all(32),
+                child: Text(Strings.cameraDenied, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
           ),

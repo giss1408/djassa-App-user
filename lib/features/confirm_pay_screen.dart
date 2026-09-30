@@ -187,10 +187,10 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(color: DjassaColors.pharmacyTint, borderRadius: BorderRadius.circular(DjassaRadius.sm)),
-                  child: Row(children: [
-                    const Icon(Icons.verified_rounded, size: 20, color: DjassaColors.success),
-                    const SizedBox(width: 8),
-                    const Expanded(
+                  child: const Row(children: [
+                    Icon(Icons.verified_rounded, size: 20, color: DjassaColors.success),
+                    SizedBox(width: 8),
+                    Expanded(
                       child: Text(Strings.verifiedMerchant,
                           style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF0B5E3F), fontSize: 14)),
                     ),

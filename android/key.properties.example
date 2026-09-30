@@ -1,0 +1,13 @@
+# Copy to android/key.properties and fill in. NEVER commit the real file.
+#
+# Generate a keystore (keep the .jks and these passwords in a password manager
+# or secret store; losing them means you can never update the app again):
+#
+#   keytool -genkey -v -keystore ~/djassa-user-release.jks \
+#     -keyalg RSA -keysize 4096 -validity 10000 -alias djassa-user
+#
+storePassword=
+keyPassword=
+keyAlias=djassa-user
+# Absolute path, outside the repository.
+storeFile=/absolute/path/to/djassa-user-release.jks
