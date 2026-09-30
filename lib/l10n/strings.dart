@@ -101,6 +101,7 @@ class Strings {
   static const checking = 'Vérification du QR code…';
   static const notDjassaQr = 'Ce QR code n\'est pas un QR code de paiement Djassa.';
   static const cameraDenied = 'Autorisez l\'appareil photo pour scanner, ou saisissez le code.';
+  static const scannerUnavailable = 'Le scanner ne démarre pas sur ce téléphone. Touchez « Saisir le code » et tapez le code affiché sous le QR.';
   static const validate = 'Valider';
 
   // Confirm

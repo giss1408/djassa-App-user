@@ -94,14 +94,24 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // No scanWindow: a QR anywhere in the camera view is read. The frame
+          // below is a guide only. Restricting detection to it failed on phones
+          // whose camera preview is scaled differently from the screen.
           MobileScanner(
             controller: _controller,
-            scanWindow: window,
             onDetect: _onDetect,
-            errorBuilder: (context, error, _) => const Center(
+            errorBuilder: (context, error, _) => Center(
               child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text(Strings.cameraDenied, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16)),
+                padding: const EdgeInsets.all(32),
+                child: Text(
+                  // Say which problem it is: a refused permission is fixed in
+                  // the settings, anything else by typing the code.
+                  error.errorCode == MobileScannerErrorCode.permissionDenied
+                      ? Strings.cameraDenied
+                      : Strings.scannerUnavailable,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
             ),
           ),
