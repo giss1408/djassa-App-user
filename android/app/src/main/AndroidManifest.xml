@@ -46,5 +46,11 @@
             <action android:name="android.intent.action.DIAL" />
             <data android:scheme="tel" />
         </intent>
+        <!-- "Itinéraire": lets Android 11+ hand a Google Maps directions link
+             to the installed maps app instead of only the browser. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
     </queries>
 </manifest>

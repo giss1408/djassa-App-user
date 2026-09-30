@@ -74,6 +74,9 @@ class Strings {
   static const noPharmacyOnDuty = 'Aucune pharmacie de garde trouvée pour cette commune.';
   static const call = 'Appeler';
   static const callFailed = 'Impossible d\'ouvrir le téléphone.';
+  static const directions = 'Itinéraire';
+  static const directionsFailed = 'Impossible d\'ouvrir les cartes.';
+  static const directionsApprox = 'Position approximative : recherche par nom et adresse.';
   static const acceptsDjassa = 'Paiement Djassa';
   static const pointsPer100 = 'pt / 100 F';
 

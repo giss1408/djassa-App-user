@@ -11,6 +11,8 @@ class Venue {
     required this.acceptsPayment,
     required this.isSample,
     this.address,
+    this.latitude,
+    this.longitude,
     this.phone,
     this.description,
     this.specialties,
@@ -27,6 +29,8 @@ class Venue {
         name: json['name'] as String,
         commune: json['commune'] as String,
         address: json['address'] as String?,
+        latitude: (json['latitude'] as num?)?.toDouble(),
+        longitude: (json['longitude'] as num?)?.toDouble(),
         phone: json['phone'] as String?,
         description: json['description'] as String?,
         specialties: json['specialties'] as String?,
@@ -49,6 +53,11 @@ class Venue {
   final String name;
   final String commune;
   final String? address;
+
+  /// Set when the merchant recorded the shop's position from its own phone,
+  /// standing in the shop (or an admin entered it). Null otherwise.
+  final double? latitude;
+  final double? longitude;
   final String? phone;
   final String? description;
   final String? specialties;
@@ -73,6 +82,22 @@ class Venue {
   final int myPoints;
 
   bool get isPharmacy => category == 'pharmacy';
+
+  bool get hasPosition => latitude != null && longitude != null;
+
+  /// Directions to this place in the phone's maps app (Google Maps, or the
+  /// browser if none is installed). The maps app does the routing, voice
+  /// guidance and offline maps, so the app ships none of that.
+  ///
+  /// With coordinates, the route goes to the exact spot. Without, it falls
+  /// back to searching the name and address in the commune, which finds known
+  /// places and gets the customer to the right area for the others.
+  Uri get directionsUri {
+    final destination = hasPosition
+        ? '${latitude!.toStringAsFixed(6)},${longitude!.toStringAsFixed(6)}'
+        : [name, if (address != null && address!.trim().isNotEmpty) address!.trim(), commune, 'Abidjan', "Côte d'Ivoire"].join(', ');
+    return Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'destination': destination});
+  }
 }
 
 class Reward {

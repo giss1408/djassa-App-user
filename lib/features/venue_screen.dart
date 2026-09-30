@@ -6,6 +6,7 @@ import '../core/model/deal.dart';
 import '../core/model/venue.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
+import '../ui/directions.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'scan_screen.dart';
@@ -132,6 +133,16 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                                     ),
                                   ),
                               ]),
+                            ),
+                            const SizedBox(height: 12),
+                            // Directions in the phone's maps app. Always
+                            // offered: without coordinates it searches the
+                            // name and address, and says so.
+                            OutlinedButton.icon(
+                              onPressed: () => openDirections(context, v),
+                              icon: const Icon(Icons.directions_rounded),
+                              label: const Text(Strings.directions),
+                              style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                             ),
                             const SizedBox(height: 14),
                             Container(

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/model/venue.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
+import '../ui/directions.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'venue_screen.dart';
@@ -128,6 +129,13 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                                 ],
                               ),
                             ),
+                            // At night, the route matters as much as the call.
+                            IconButton.filledTonal(
+                              onPressed: () => openDirections(context, p),
+                              icon: const Icon(Icons.directions_rounded, color: DjassaColors.pharmacy),
+                              tooltip: Strings.directions,
+                            ),
+                            const SizedBox(width: 6),
                             if (p.phone != null)
                               FilledButton.icon(
                                 style: FilledButton.styleFrom(
