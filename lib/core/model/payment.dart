@@ -31,6 +31,7 @@ class Payment {
     required this.createdAt,
     this.failureReason,
     this.providerReference,
+    this.checkoutUrl,
   });
 
   factory Payment.fromJson(Map<String, Object?> json) => Payment(
@@ -42,6 +43,7 @@ class Payment {
         status: json['status'] as String,
         failureReason: json['failure_reason'] as String?,
         providerReference: json['provider_reference'] as String?,
+        checkoutUrl: json['checkout_url'] as String?,
         pointsAwarded: json['points_awarded'] as int? ?? 0,
         createdAt: parseServerTime(json['created_at']) ?? DateTime.now(),
       );
@@ -58,11 +60,16 @@ class Payment {
   final String status;
   final String? failureReason;
   final String? providerReference;
+
+  /// Set while a wallet checkout (Wave) waits for the customer's approval:
+  /// the app opens it, the Wave app confirms, the server settles.
+  final String? checkoutUrl;
   final int pointsAwarded;
   final DateTime createdAt;
 
   bool get succeeded => status == 'succeeded';
   bool get failed => status == 'failed';
+  bool get awaitsWallet => status == 'pending' && checkoutUrl != null;
 }
 
 /// What a scanned QR resolves to, as the SERVER knows it. The confirmation

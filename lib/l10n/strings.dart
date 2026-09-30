@@ -133,6 +133,12 @@ class Strings {
   static const paymentDone = 'Paiement réussi';
   static const paymentFailed = 'Paiement refusé';
   static const paymentPending = 'Paiement en attente';
+  static const waveWaitTitle = 'Validez dans Wave';
+  static const waveWaitBody = 'Confirmez le paiement dans l\'application Wave, puis revenez ici. Vos points s\'affichent dès que Wave confirme.';
+  static const waveOpen = 'Ouvrir Wave';
+  static const waveOpenFailed = 'Impossible d\'ouvrir Wave. Vérifiez que l\'application Wave est installée.';
+  static const waveChecking = 'En attente de la confirmation de Wave…';
+  static const waveStillPending = 'Wave n\'a pas encore confirmé. Vous pouvez fermer : le paiement apparaîtra dans votre historique.';
   static const pointsEarned = 'points gagnés';
   static const reference = 'Référence';
   static const date = 'Date';

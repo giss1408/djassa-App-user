@@ -12,6 +12,7 @@ import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'receipt_screen.dart';
+import 'wave_wait_screen.dart';
 
 /// Step 2 of paying: check who you are paying, then confirm twice — once on
 /// this screen, once in a summary sheet — before any money moves.
@@ -117,7 +118,10 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
         _uncertainKey = null;
       });
       HapticFeedback.heavyImpact();
-      final again = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => ReceiptScreen(payment: payment)));
+      // A Wave checkout is approved in the Wave app first; the wait screen
+      // opens it and hands over to the receipt once Wave has answered.
+      final again = await Navigator.of(context).push<bool>(MaterialPageRoute(
+          builder: (_) => payment.awaitsWallet ? WaveWaitScreen(payment: payment) : ReceiptScreen(payment: payment)));
       // A declined payment offers "try again" and lands back here; anything
       // else closes the flow.
       if (mounted && again != true) Navigator.of(context).pop();

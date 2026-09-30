@@ -73,6 +73,10 @@ class DjassaApi {
     return Payment.fromJson(json);
   }
 
+  /// One payment. For a pending Wave checkout the server first asks Wave, so
+  /// polling this shows the outcome even when Wave's notification is late.
+  Future<Payment> payment(int id) async => Payment.fromJson(await _client.getJson('/api/customer/payments/$id'));
+
   Future<List<Payment>> payments() async {
     final list = await _client.getJsonList('/api/customer/payments');
     return [for (final p in list) Payment.fromJson(p! as Map<String, Object?>)];
