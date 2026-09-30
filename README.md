@@ -13,7 +13,7 @@ flutter test && flutter analyze  # must be clean before a commit
 
 ## Test distribution
 
-Testers install from one link shared on WhatsApp: `djassa.onrender.com/app`.
+Testers install from one link shared on WhatsApp: the site's `/app` page.
 Signed APKs are published as GitHub Releases by
 [`.github/workflows/release.yml`](.github/workflows/release.yml) when a version
 tag is pushed:
