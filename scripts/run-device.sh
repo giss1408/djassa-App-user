@@ -8,8 +8,9 @@
 # machine over USB: no shared Wi-Fi needed, traffic never leaves the cable.
 # (10.0.2.2 is emulator-only and does NOT work on a physical device.)
 #
-# The sign-in form is prefilled with the backend's demo customer
-# (app/api/auth.py). Override with DJASSA_DEV_USERNAME / DJASSA_DEV_PASSWORD.
+# The sign-in form is prefilled with 0700000001 (any number works: a customer account is created on first sign-in). Run the backend
+# with OTP_DEV_ECHO=1 and the SMS code is filled in too. Override with
+# DJASSA_DEV_PHONE.
 set -euo pipefail
 
 PORT="${1:-8002}"
@@ -28,6 +29,5 @@ adb reverse "tcp:$PORT" "tcp:$PORT"
 # loopback (see android/app/src/debug/res/xml/network_security_config.xml).
 exec flutter run \
   --dart-define=DJASSA_API_BASE="http://localhost:$PORT" \
-  --dart-define=DJASSA_DEV_USERNAME="${DJASSA_DEV_USERNAME:-client}" \
-  --dart-define=DJASSA_DEV_PASSWORD="${DJASSA_DEV_PASSWORD:-client123}" \
+  --dart-define=DJASSA_DEV_PHONE="${DJASSA_DEV_PHONE:-0700000001}" \
   "$@"

@@ -739,7 +739,15 @@ class WalletSwatch extends StatelessWidget {
 /// Until venues have photos, a wax-print gradient with the venue's initials
 /// set in the display serif gives each place its own recognisable cover.
 class VenueBanner extends StatelessWidget {
-  const VenueBanner({super.key, required this.venue, this.height = 92, this.radius = 0, this.monogramSize, this.showIcon = true});
+  const VenueBanner({
+    super.key,
+    required this.venue,
+    this.height = 92,
+    this.radius = 0,
+    this.monogramSize,
+    this.showIcon = true,
+    this.imageUrl,
+  });
 
   final Venue venue;
   final double height;
@@ -748,6 +756,11 @@ class VenueBanner extends StatelessWidget {
 
   /// Off on the venue page, where the back button owns that corner.
   final bool showIcon;
+
+  /// A photo of the shop over the gradient. Defaults to the list cover
+  /// (320 px); the shop page passes its 720 px photo. The gradient and
+  /// monogram stay underneath, so a slow or failed load still looks right.
+  final String? imageUrl;
 
   static String initials(String name) {
     const skip = {'chez', 'le', 'la', 'les', 'de', 'des', 'du', 'maquis', 'pharmacie', "l'", 'd\'', 'et'};
@@ -776,6 +789,19 @@ class VenueBanner extends StatelessWidget {
               child: Text(initials(venue.name),
                   style: serifStyle(monogramSize ?? height * 0.9, color: Colors.white.withOpacity(0.22), height: 1)),
             ),
+            if ((imageUrl ?? venue.coverUrl) != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: Image.network(
+                  imageUrl ?? venue.coverUrl!,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                  // Fade in over the gradient instead of popping.
+                  frameBuilder: (context, child, frame, sync) =>
+                      sync ? child : AnimatedOpacity(opacity: frame == null ? 0 : 1, duration: const Duration(milliseconds: 250), child: child),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
             if (showIcon)
               Positioned(
                 left: 12,

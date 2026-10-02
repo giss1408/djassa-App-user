@@ -1,4 +1,5 @@
 import 'deal.dart';
+import 'venue_media.dart';
 
 /// A place a customer can find and pay: a maquis, a pharmacy, a shop...
 class Venue {
@@ -21,6 +22,8 @@ class Venue {
     this.rewards = const [],
     this.deals = const [],
     this.myPoints = 0,
+    this.media = const [],
+    this.coverUrl,
   });
 
   factory Venue.fromJson(Map<String, Object?> json) => Venue(
@@ -46,6 +49,10 @@ class Venue {
           for (final d in (json['deals'] as List<Object?>? ?? const [])) Deal.fromJson(d! as Map<String, Object?>),
         ],
         myPoints: json['my_points'] as int? ?? 0,
+        coverUrl: json['cover_url'] as String?,
+        media: [
+          for (final m in (json['media'] as List<Object?>? ?? const [])) VenueMedia.fromJson(m! as Map<String, Object?>),
+        ],
       );
 
   final int id;
@@ -77,6 +84,12 @@ class Venue {
   final DateTime? dutyEndsAt;
 
   /// Set only on the detail endpoint.
+  /// The first photo's 320 px thumbnail (~15 KB), for list cards.
+  final String? coverUrl;
+
+  /// Photos and videos, on the shop page only (not in lists).
+  final List<VenueMedia> media;
+
   final List<Reward> rewards;
   final List<Deal> deals;
   final int myPoints;

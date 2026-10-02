@@ -23,6 +23,11 @@ dependencies:
   # HTTP with explicit timeouts. Thinner than dio, enough for a few endpoints.
   http: ^1.2.2
 
+  # Where the error reporter keeps unsent reports between launches
+  # (lib/core/monitoring/). Already compiled in through flutter_secure_storage,
+  # so declaring it adds nothing to the APK.
+  path_provider: ^2.1.4
+
   # Opens the dialer on a pharmacy's number. Calling the on-duty pharmacy at
   # 2 a.m. before crossing the city is the whole point of that screen.
   url_launcher: ^6.3.0
@@ -31,6 +36,11 @@ dependencies:
   # (android/gradle.properties), so the scanner comes from Google Play
   # services instead of adding ~3MB to the APK.
   mobile_scanner: ^6.0.11
+  # Shop videos played inside the app (venue_media_strip.dart). Uses
+  # Android's ExoPlayer; streams the server's faststart MP4, so playback
+  # starts before the file is fully downloaded. Only after the customer has
+  # seen the video's size and tapped "Regarder".
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:

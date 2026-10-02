@@ -10,6 +10,7 @@ import '../ui/directions.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'scan_screen.dart';
+import 'venue_media_strip.dart';
 
 class VenueScreen extends ConsumerStatefulWidget {
   const VenueScreen({super.key, required this.venueId});
@@ -83,7 +84,13 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
               : ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    VenueBanner(venue: v, height: 230 + MediaQuery.paddingOf(context).top, showIcon: false),
+                    VenueBanner(
+                      venue: v,
+                      height: 230 + MediaQuery.paddingOf(context).top,
+                      showIcon: false,
+                      // Full width on the shop page: the 720 px photo, not the list thumbnail.
+                      imageUrl: v.media.where((m) => !m.isVideo).map((m) => m.mediumUrl).firstOrNull ?? v.coverUrl,
+                    ),
                     Transform.translate(
                       offset: const Offset(0, -26),
                       child: Container(
@@ -111,6 +118,10 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                             if (v.description != null) ...[
                               const SizedBox(height: 14),
                               Text(v.description!, style: text.bodyMedium?.copyWith(color: DjassaColors.inkSoft)),
+                            ],
+                            if (v.media.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              VenueMediaStrip(media: v.media),
                             ],
                             const SizedBox(height: 18),
                             SoftCard(

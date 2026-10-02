@@ -1,60 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/auth/auth_repository.dart';
-import '../core/config/env.dart';
-import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'about_name_screen.dart';
+import 'phone_sign_in_form.dart';
 
-/// Sign-in against the backend's demo accounts. Phone-number login anchored
-/// to the mobile-money wallet is the intended Tier 0 identity; it does not
-/// exist server-side yet, so this speaks the username/password API that does.
-class SignInScreen extends ConsumerStatefulWidget {
+/// Sign-in with a phone number and an SMS code. The number is the customer's
+/// account (CONCEPT.md, Tier 0), and the same key the counter uses for
+/// loyalty, so points earned at a counter are there on first sign-in.
+class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
 
   @override
-  ConsumerState<SignInScreen> createState() => _SignInScreenState();
-}
-
-class _SignInScreenState extends ConsumerState<SignInScreen> {
-  // Prefilled only in debug builds given DJASSA_DEV_* defines. See Env.
-  final _username = TextEditingController(text: Env.devUsername);
-  final _password = TextEditingController(text: Env.devPassword);
-  bool _busy = false;
-  bool _obscure = true;
-  String? _error;
-
-  @override
-  void dispose() {
-    _username.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (_busy) return;
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    final result = await ref.read(sessionProvider.notifier).signIn(username: _username.text.trim(), password: _password.text);
-    if (!mounted) return;
-    setState(() {
-      _busy = false;
-      _error = switch (result) {
-        SignInSuccess() => null,
-        SignInRejected() => Strings.signInRejected,
-        SignInUnavailable(message: final m) => m,
-      };
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
     final top = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
@@ -94,47 +53,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextField(
-                  controller: _username,
-                  enabled: !_busy,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: Strings.username, prefixIcon: Icon(Icons.person_outline_rounded)),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _password,
-                  enabled: !_busy,
-                  obscureText: _obscure,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _submit(),
-                  decoration: InputDecoration(
-                    labelText: Strings.password,
-                    prefixIcon: const Icon(Icons.lock_outline_rounded),
-                    suffixIcon: IconButton(
-                      onPressed: () => setState(() => _obscure = !_obscure),
-                      icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                    ),
-                  ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 14),
-                  Row(children: [
-                    const Icon(Icons.error_outline_rounded, size: 18, color: DjassaColors.danger),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(_error!, style: text.bodyMedium?.copyWith(color: DjassaColors.danger))),
-                  ]),
-                ],
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: _busy ? null : _submit,
-                  child: _busy
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                      : const Text(Strings.signIn),
-                ),
+                const PhoneSignInForm(),
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutNameScreen())),

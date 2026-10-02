@@ -6,12 +6,50 @@ class Strings {
   // Sign-in
   static const signInTitle = 'Bienvenue sur Djassa';
   static const signInSubtitle = 'Vos maquis, votre pharmacie de garde, vos paiements et vos points, au même endroit.';
-  static const username = 'Identifiant';
-  static const password = 'Mot de passe';
+  static const signInPhoneLabel = 'Numéro de téléphone';
+  static const signInPhoneHint = '07 12 34 56 78';
+  static const signInPhoneHelper = 'Vous recevrez un code par SMS.';
+  static const signInSendCode = 'Recevoir le code';
+  static const signInCodeSentTo = 'Code envoyé par SMS au';
+  static const signInCodeLabel = 'Code à 6 chiffres';
+  static const signInResendCode = 'Renvoyer le code';
+  static const signInChangeNumber = 'Changer de numéro';
   static const signIn = 'Se connecter';
   static const signingIn = 'Connexion…';
-  static const signInRejected = 'Identifiant ou mot de passe incorrect.';
   static const signOut = 'Se déconnecter';
+
+  // Shop media
+  static const videoTitle = 'Regarder la vidéo ?';
+  static const videoCost = 'Elle utilise votre connexion internet.';
+  static const videoWatch = 'Regarder';
+  static const videoFailed = 'La vidéo n\'a pas pu être lue. Vérifiez votre connexion.';
+
+  // Account and recovery
+  static const account = 'Mon compte';
+  static const accountNumber = 'Numéro du compte';
+  static const changeNumber = 'Changer de numéro';
+  static const changeNumberHint = 'Gardez vos points et votre historique sur un nouveau numéro.';
+  static const changeNumberIntro = 'Il faut les deux SIM : un code arrive sur l\'ancien numéro, un autre sur le nouveau.';
+  static const newPhone = 'Nouveau numéro';
+  static const sendCodes = 'Recevoir les codes';
+  static const oldNumberCode = 'Code reçu sur l\'ancien numéro';
+  static const newNumberCode = 'Code reçu sur le nouveau numéro';
+  static const confirmChange = 'Changer de numéro';
+  static const numberChanged = 'Votre compte est maintenant sur le';
+  static const signOutOthers = 'Déconnecter les autres téléphones';
+  static const signOutOthersHint = 'Téléphone perdu ou volé : il perd l\'accès dans l\'heure.';
+  static const signOutOthersConfirm = 'Déconnecter tous les autres téléphones ?';
+  static const signOutOthersDone = 'Les autres téléphones sont déconnectés.';
+  static const lostNumber = 'Numéro perdu ?';
+  static const lostNumberTitle = 'Récupérer mon compte';
+  static const lostNumberIntro = 'Votre ancien numéro ne marche plus ? Vérifiez votre nouveau numéro, puis dites-nous qui vous êtes. Djassa vérifie et transfère votre compte.';
+  static const oldPhone = 'Ancien numéro';
+  static const recoveryDetails = 'Pour vous reconnaître';
+  static const recoveryDetailsHint = 'Votre nom, les maquis ou pharmacies où vous gagnez des points, votre dernier achat…';
+  static const sendRequest = 'Envoyer la demande';
+  static const requestSent = 'Demande envoyée';
+  static const backToSignIn = 'Retour à la connexion';
+  static const continueLabel = 'Continuer';
 
   // Navigation
   static const tabHome = 'Accueil';

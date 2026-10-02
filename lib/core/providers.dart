@@ -9,11 +9,20 @@ import 'net/api_client.dart';
 
 final tokenStoreProvider = Provider<TokenStore>((ref) => TokenStore());
 
-final apiClientProvider = Provider<ApiClient>((ref) {
+final Provider<ApiClient> apiClientProvider = Provider<ApiClient>((ref) {
   final tokenStore = ref.watch(tokenStoreProvider);
   final client = ApiClient(
-    tokenProvider: tokenStore.readToken,
-    // A 401 from any call means the token is dead. Clear it once, here.
+    // An access token past its hour is renewed before the request rather
+    // than spending a round trip on a certain 401. Read lazily: the auth
+    // repository itself talks through this client.
+    tokenProvider: () async {
+      final token = await tokenStore.readToken();
+      if (token == null || token.isEmpty || !isTokenExpired(token)) return token;
+      return await ref.read(authRepositoryProvider).refresh() ? tokenStore.readToken() : token;
+    },
+    // A 401 anyway (token revoked, clock skew): renew once and replay.
+    onRefresh: () => ref.read(authRepositoryProvider).refresh(),
+    // Renewal refused too: the session is over. Clear it once, here.
     onUnauthorized: () async {
       await tokenStore.clear();
       ref.read(sessionProvider.notifier).onTokenRejected();
@@ -23,7 +32,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return client;
 });
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
+final Provider<AuthRepository> authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     client: ref.watch(apiClientProvider),
     tokenStore: ref.watch(tokenStoreProvider),
@@ -61,8 +70,8 @@ class SessionNotifier extends Notifier<SessionState> {
     );
   }
 
-  Future<SignInResult> signIn({required String username, required String password}) async {
-    final result = await ref.read(authRepositoryProvider).signIn(username: username, password: password);
+  Future<SignInResult> verifyCode({required String phone, required String code}) async {
+    final result = await ref.read(authRepositoryProvider).verifyCode(phone: phone, code: code);
     if (result is SignInSuccess) {
       state = SessionState(signedIn: true, username: result.username, checked: true);
     }
@@ -72,6 +81,12 @@ class SessionNotifier extends Notifier<SessionState> {
   Future<void> signOut() async {
     await ref.read(authRepositoryProvider).signOut();
     state = const SessionState(signedIn: false, checked: true);
+  }
+
+
+  /// The account moved to another number; this device holds its new session.
+  void onNumberChanged(String username) {
+    state = SessionState(signedIn: true, username: username, checked: true);
   }
 
   void onTokenRejected() {

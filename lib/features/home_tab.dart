@@ -10,6 +10,7 @@ import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import '../core/model/deal.dart';
 import 'about_name_screen.dart';
+import 'account_screen.dart';
 import 'pharmacies_tab.dart';
 import 'payments_screen.dart';
 import 'venue_screen.dart';
@@ -312,13 +313,19 @@ class _AccountMenu extends ConsumerWidget {
       offset: const Offset(0, 52),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DjassaRadius.md)),
       onSelected: (v) {
-        if (v == 'about') {
+        if (v == 'account') {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AccountScreen()));
+        } else if (v == 'about') {
           Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutNameScreen()));
         } else if (v == 'logout') {
           ref.read(sessionProvider.notifier).signOut();
         }
       },
       itemBuilder: (_) => const [
+        PopupMenuItem(
+          value: 'account',
+          child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.manage_accounts_outlined), title: Text(Strings.account)),
+        ),
         PopupMenuItem(
           value: 'about',
           child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_stories_outlined), title: Text(Strings.aboutNameLink)),
