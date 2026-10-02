@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import 'home_tab.dart';
@@ -11,26 +13,40 @@ import 'scan_screen.dart';
 /// Four tabs (home, explore, deals, loyalty) around one central action. Paying is the gesture that makes the
 /// app essential (it earns the points and builds the merchant's history), so
 /// it gets the big button in the middle, the way mobile-money apps put "scan".
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   int _tab = 0;
+
+  /// Labels for usage analytics, in tab order.
+  static const _tabNames = ['home', 'explore', 'deals', 'loyalty'];
+
+  @override
+  void initState() {
+    super.initState();
+    _trackTab(0);
+  }
+
+  void _trackTab(int tab) => ref.read(usageTrackerProvider).track('tab_view', {'screen': _tabNames[tab]});
   // Bumped after a payment so tabs showing points reload.
   int _refresh = 0;
 
   Future<void> _scan() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ScanScreen()));
+    await Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'scan'), builder: (_) => const ScanScreen()));
     if (mounted) setState(() => _refresh++);
   }
 
   final _explore = GlobalKey<ExploreTabState>();
 
-  void _go(int tab) => setState(() => _tab = tab);
+  void _go(int tab) {
+    if (tab != _tab) _trackTab(tab);
+    setState(() => _tab = tab);
+  }
 
   /// Explorer, filtered on [category] (null: everything).
   void _openExplore(String? category) {

@@ -24,6 +24,12 @@ class ScanScreen extends ConsumerStatefulWidget {
 }
 
 class _ScanScreenState extends ConsumerState<ScanScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(usageTrackerProvider).track('scan_opened');
+  }
+
   final _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
     formats: const [BarcodeFormat.qrCode],
@@ -60,7 +66,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     try {
       final target = await ref.read(djassaApiProvider).checkPayCode(code);
       if (!mounted) return;
-      await Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => ConfirmPayScreen(target: target)));
+      await Navigator.of(context).pushReplacement(MaterialPageRoute(settings: const RouteSettings(name: 'confirm_pay'), builder: (_) => ConfirmPayScreen(target: target)));
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {

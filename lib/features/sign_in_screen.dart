@@ -56,7 +56,7 @@ class SignInScreen extends StatelessWidget {
                 const PhoneSignInForm(),
                 const SizedBox(height: 12),
                 TextButton(
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutNameScreen())),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'about_name'), builder: (_) => const AboutNameScreen())),
                   child: const Text(Strings.aboutNameLink),
                 ),
               ],

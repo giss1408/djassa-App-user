@@ -3,15 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth/auth_repository.dart';
 import 'auth/token_store.dart';
 import 'djassa_api.dart';
+import 'monitoring/usage_tracker.dart';
 import 'net/api_client.dart';
 
 /// Wiring for the whole app. Nothing here holds UI state.
+
+/// Pilot usage analytics. Disabled here; `main` overrides it with the live
+/// tracker, so tests and previews never send anything.
+final usageTrackerProvider = Provider<UsageTracker>((ref) => UsageTracker(app: 'user', enabled: false));
 
 final tokenStoreProvider = Provider<TokenStore>((ref) => TokenStore());
 
 final Provider<ApiClient> apiClientProvider = Provider<ApiClient>((ref) {
   final tokenStore = ref.watch(tokenStoreProvider);
   final client = ApiClient(
+    onTraffic: ref.watch(usageTrackerProvider).addTraffic,
     // An access token past its hour is renewed before the request rather
     // than spending a round trip on a certain 401. Read lazily: the auth
     // repository itself talks through this client.

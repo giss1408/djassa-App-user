@@ -108,7 +108,7 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                   for (final p in list)
                     VenueCard(
                       venue: p,
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => VenueScreen(venueId: p.id))),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: p.id))),
                       footer: Container(
                         padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
                         decoration: BoxDecoration(color: DjassaColors.pharmacyTint, borderRadius: BorderRadius.circular(DjassaRadius.md)),

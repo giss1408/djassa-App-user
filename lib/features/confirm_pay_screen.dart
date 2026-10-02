@@ -99,6 +99,7 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
   }
 
   Future<void> _pay() async {
+    ref.read(usageTrackerProvider).track('payment_started', {'wallet': _wallet.name});
     final key = _uncertainKey ?? newIdempotencyKey();
     setState(() {
       _busy = true;
@@ -118,6 +119,9 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
         _uncertainKey = null;
       });
       HapticFeedback.heavyImpact();
+      if (!payment.awaitsWallet) {
+        ref.read(usageTrackerProvider).track('payment_completed', {'wallet': _wallet.name, 'status': payment.status});
+      }
       // A Wave checkout is approved in the Wave app first; the wait screen
       // opens it and hands over to the receipt once Wave has answered.
       final again = await Navigator.of(context).push<bool>(MaterialPageRoute(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 import '../core/model/venue_media.dart';
+import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 
@@ -37,7 +39,9 @@ class VenueMediaStrip extends StatelessWidget {
       return;
     }
     final photos = media.where((x) => !x.isVideo).toList();
+    ProviderScope.containerOf(context, listen: false).read(usageTrackerProvider).track('media_viewed', {'kind': 'photo'});
     await Navigator.of(context).push(MaterialPageRoute(
+      settings: const RouteSettings(name: 'photo_viewer'),
       builder: (_) => _PhotoViewer(photos: photos, initial: photos.indexOf(m)),
     ));
   }
@@ -58,7 +62,9 @@ class VenueMediaStrip extends StatelessWidget {
       ),
     );
     if (watch == true && context.mounted) {
-      await Navigator.of(context).push(MaterialPageRoute(builder: (_) => _VideoScreen(url: url, poster: m.thumbUrl)));
+      // Counted only once the customer agreed to spend the data.
+      ProviderScope.containerOf(context, listen: false).read(usageTrackerProvider).track('media_viewed', {'kind': 'video'});
+      await Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'video'), builder: (_) => _VideoScreen(url: url, poster: m.thumbUrl)));
     }
   }
 }

@@ -88,7 +88,8 @@ class _WaveWaitScreenState extends ConsumerState<WaveWaitScreen> with WidgetsBin
       if (!mounted || p.status == 'pending') return;
       _done = true;
       _timer?.cancel();
-      final again = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => ReceiptScreen(payment: p)));
+      ref.read(usageTrackerProvider).track('payment_completed', {'wallet': 'wave', 'status': p.status});
+      final again = await Navigator.of(context).push<bool>(MaterialPageRoute(settings: const RouteSettings(name: 'receipt'), builder: (_) => ReceiptScreen(payment: p)));
       if (mounted) Navigator.of(context).pop(again);
     } on ApiException {
       // Offline or asleep: the next tick tries again.

@@ -42,7 +42,10 @@ class _DealsTabState extends ConsumerState<DealsTab> {
     }
   }
 
-  void _open(Deal d) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => VenueScreen(venueId: d.venueId)));
+  void _open(Deal d) {
+    ref.read(usageTrackerProvider).track('deal_opened', {'deal_id': d.id});
+    Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: d.venueId)));
+  }
 
   @override
   Widget build(BuildContext context) {

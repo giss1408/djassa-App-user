@@ -28,6 +28,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
   @override
   void initState() {
     super.initState();
+    ref.read(usageTrackerProvider).track('venue_viewed', {'venue_id': widget.venueId});
     _load();
   }
 
@@ -42,7 +43,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
   }
 
   Future<void> _scan() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ScanScreen()));
+    await Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'scan'), builder: (_) => const ScanScreen()));
     _load(); // points here may have changed
   }
 

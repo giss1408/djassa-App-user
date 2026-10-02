@@ -65,11 +65,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     if (mounted) setState(fn);
   }
 
-  void _openVenue(Venue v) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => VenueScreen(venueId: v.id)));
+  void _openVenue(Venue v) => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: v.id)));
 
-  void _openPharmacies() => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PharmaciesScreen()));
+  void _openPharmacies() => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'pharmacies'), builder: (_) => const PharmaciesScreen()));
 
-  void _openPayments() => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaymentsScreen()));
+  void _openPayments() => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'payments'), builder: (_) => const PaymentsScreen()));
 
   @override
   Widget build(BuildContext context) {
@@ -188,9 +188,12 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         child: DealCard(
                           deal: _featured![i],
                           hero: true,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => VenueScreen(venueId: _featured![i].venueId)),
-                          ),
+                          onTap: () {
+                            ref.read(usageTrackerProvider).track('deal_opened', {'deal_id': _featured![i].id});
+                            Navigator.of(context).push(
+                              MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: _featured![i].venueId)),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -314,9 +317,9 @@ class _AccountMenu extends ConsumerWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DjassaRadius.md)),
       onSelected: (v) {
         if (v == 'account') {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AccountScreen()));
+          Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'account'), builder: (_) => const AccountScreen()));
         } else if (v == 'about') {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutNameScreen()));
+          Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'about_name'), builder: (_) => const AboutNameScreen()));
         } else if (v == 'logout') {
           ref.read(sessionProvider.notifier).signOut();
         }

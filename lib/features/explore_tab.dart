@@ -146,7 +146,7 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
                     VenueCard(
                       venue: v,
                       cover: true,
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => VenueScreen(venueId: v.id))),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: v.id))),
                     ),
                 ],
               ],
@@ -167,7 +167,7 @@ class _OnDutyBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return SoftCard(
       color: DjassaColors.pharmacyTint,
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PharmaciesScreen())),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'pharmacies'), builder: (_) => const PharmaciesScreen())),
       padding: const EdgeInsets.all(14),
       child: const Row(children: [
         LiveDot(),
