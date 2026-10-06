@@ -25,6 +25,7 @@ class Category {
   /// Used when /api/categories cannot be reached, so browsing still works.
   static const fallback = [
     Category(key: 'maquis', label: 'Maquis', plural: 'Maquis'),
+    Category(key: 'restaurant', label: 'Restaurant', plural: 'Restaurants'),
     Category(key: 'superette', label: 'Supérette', plural: 'Supérettes'),
     Category(key: 'pharmacy', label: 'Pharmacie', plural: 'Pharmacies'),
     Category(key: 'mode', label: 'Mode', plural: 'Boutiques de mode'),

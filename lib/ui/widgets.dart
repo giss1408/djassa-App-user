@@ -342,6 +342,11 @@ class CategoryStyle {
 
   static const _styles = {
     'maquis': CategoryStyle(Icons.restaurant_rounded, _warm),
+    'restaurant': CategoryStyle(Icons.restaurant_menu_rounded, [
+      [Color(0xFF8C5A3C), Color(0xFF4E2E1C)],
+      [Color(0xFFE8B04B), Color(0xFFB9772A)],
+      [Color(0xFFE65E32), Color(0xFF9E3517)],
+    ]),
     'pharmacy': CategoryStyle(Icons.local_pharmacy_rounded, [
       [Color(0xFF2BB673), DjassaColors.pharmacy],
     ]),
