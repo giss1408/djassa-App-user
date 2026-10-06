@@ -201,6 +201,17 @@ class Strings {
   static const voucherShow = 'Montrez ce code au commerçant';
   static const earnedAt = 'Gagnés chez';
   static const spentAt = 'Utilisés chez';
+  // "Payer en plusieurs fois". Never "crédit": the customer pays first.
+  static const layawayTitle = 'Paiements en plusieurs fois';
+  static const layawayMoneyNote = 'L\'argent est gardé par le commerçant, pas par Djassa. Il vous remet le produit quand le prix est atteint.';
+  static const layawayPaid = 'payé sur';
+  static const layawayRemaining = 'Reste';
+  static const layawayBefore = 'avant le';
+  static const layawayReady = 'Payé : passez le récupérer';
+  static const layawayDelivered = 'Remis';
+  static const layawayCancelled = 'Annulé';
+  static const layawayRefunded = 'remboursé';
+  static const layawayPayments = 'versements';
   static const noCashOut = 'Les points s\'échangent contre des récompenses chez chaque commerçant, pas contre de l\'argent.';
   static const myPayments = 'Mes paiements';
   static const noPaymentsYet = 'Aucun paiement pour le moment';

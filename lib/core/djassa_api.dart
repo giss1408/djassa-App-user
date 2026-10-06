@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'model/deal.dart';
+import 'model/layaway.dart';
 import 'model/loyalty.dart';
 import 'model/payment.dart';
 import 'model/venue.dart';
@@ -86,6 +87,12 @@ class DjassaApi {
 
   Future<Voucher> redeem(int rewardId) async =>
       Voucher.fromJson(await _client.postJson('/api/customer/loyalty/redeem', body: {'reward_id': rewardId}));
+
+  /// Goods being paid in several installments, at any shop.
+  Future<List<LayawayPlan>> layaway() async {
+    final list = await _client.getJsonList('/api/customer/layaway');
+    return [for (final p in list) LayawayPlan.fromJson(p! as Map<String, Object?>)];
+  }
 }
 
 /// 128 random bits as hex. Enough that two payments never collide, without
