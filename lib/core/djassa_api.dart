@@ -7,19 +7,22 @@ import 'model/venue.dart';
 import 'net/api_client.dart';
 
 /// Every customer-facing call, typed. Screens never build URLs themselves.
+///
+/// The catalogue (categories, offers, shops, pharmacies) works signed out;
+/// paying, points, history and the account need a session (sign_in_gate.dart).
 class DjassaApi {
   DjassaApi(this._client);
 
   final ApiClient _client;
 
   Future<List<Category>> categories() async {
-    final list = await _client.getJsonList('/api/categories');
+    final list = await _client.getJsonList('/api/categories', optionalAuth: true);
     return [for (final c in list) Category.fromJson(c! as Map<String, Object?>)];
   }
 
   /// Live deals, sponsored first. [featured] true: only the sponsored ones.
   Future<List<Deal>> deals({String? category, String? commune, bool? featured}) async {
-    final list = await _client.getJsonList('/api/deals', query: {
+    final list = await _client.getJsonList('/api/deals', optionalAuth: true, query: {
       if (category != null) 'category': category,
       if (commune != null) 'commune': commune,
       if (featured != null) 'featured': '$featured',
@@ -29,7 +32,7 @@ class DjassaApi {
 
   /// Venues of one [category], or of every kind when null.
   Future<List<Venue>> venues({String? category, String? query, String? commune}) async {
-    final list = await _client.getJsonList('/api/venues', query: {
+    final list = await _client.getJsonList('/api/venues', optionalAuth: true, query: {
       if (category != null) 'category': category,
       if (query != null && query.trim().isNotEmpty) 'q': query.trim(),
       if (commune != null) 'commune': commune,
@@ -37,10 +40,10 @@ class DjassaApi {
     return [for (final v in list) Venue.fromJson(v! as Map<String, Object?>)];
   }
 
-  Future<Venue> venue(int id) async => Venue.fromJson(await _client.getJson('/api/venues/$id'));
+  Future<Venue> venue(int id) async => Venue.fromJson(await _client.getJson('/api/venues/$id', optionalAuth: true));
 
   Future<List<Venue>> onDutyPharmacies({String? commune}) async {
-    final list = await _client.getJsonList('/api/pharmacies/on-duty', query: {
+    final list = await _client.getJsonList('/api/pharmacies/on-duty', optionalAuth: true, query: {
       if (commune != null) 'commune': commune,
     });
     return [for (final v in list) Venue.fromJson(v! as Map<String, Object?>)];

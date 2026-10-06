@@ -21,6 +21,12 @@ class Strings {
   static const loyaltyWithdraw = 'Retirer et effacer';
   static String loyaltyErased(int points) => 'Accord retiré. $points points effacés.';
   static const loyaltyGiven = 'Merci ! Vos prochains achats vous rapportent des points.';
+  // Browsing signed out: sign-in is asked only when it is needed.
+  static const signInAction = 'Se connecter';
+  static const signInToPay = 'Connectez-vous pour payer et gagner des points.';
+  static const signInToSeePoints = 'Connectez-vous pour voir vos points et vos récompenses.';
+  static const pointsSignedOut = 'Gagnez des points';
+  static const pointsSignedOutHint = 'Connectez-vous';
   // Suggestions to the Djassa team (unlocked at 100 points).
   static const suggestions = 'Aide';
   static const suggestionsFailed = "WhatsApp n'a pas pu s'ouvrir.";

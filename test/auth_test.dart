@@ -68,6 +68,20 @@ void main() {
     expect(await store.readRefreshToken(), 'refresh-1');
   });
 
+  test('the catalogue is read signed out; the customer\'s own data is not', () async {
+    respond = (r) => json(<Object?>[]);
+    expect(await client.getJsonList('/api/deals', optionalAuth: true), isEmpty);
+    expect(sent.single.headers.containsKey('Authorization'), isFalse);
+    expect(() => client.getJson('/api/customer/loyalty'), throwsA(isA<UnauthorizedException>()));
+
+    // Signed in, the same call carries the token (a shop page shows my points).
+    respond = (r) => json(pair('access-1', 'refresh-1'));
+    await auth.verifyCode(phone: '0700000002', code: '123456');
+    respond = (r) => json(<Object?>[]);
+    await client.getJsonList('/api/deals', optionalAuth: true);
+    expect(sent.last.headers['Authorization'], 'Bearer access-1');
+  });
+
   test('the loyalty consent ticked on the sign-in screen travels with the code, and only then', () async {
     respond = (r) => json(pair('access-1', 'refresh-1'));
     await auth.verifyCode(phone: '0700000002', code: '123456', loyaltyConsentVersion: 'fidelite-2026-10');

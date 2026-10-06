@@ -8,6 +8,7 @@ import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'sign_in_gate.dart';
 import '../core/model/deal.dart';
 import 'about_name_screen.dart';
 import 'account_screen.dart';
@@ -47,8 +48,10 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   // Each block loads on its own: one slow call must not blank the whole page.
   Future<void> _load() async {
     final api = ref.read(djassaApiProvider);
+    // Points and payments are the customer's own: only with a session.
+    final signedIn = ref.read(sessionProvider).signedIn;
     await Future.wait([
-      api.loyalty().then((l) => _set(() => _points = l.totalPoints)).catchError((_) {}),
+      if (signedIn) api.loyalty().then((l) => _set(() => _points = l.totalPoints)).catchError((_) {}),
       api.onDutyPharmacies().then((v) => _set(() => _onDuty = v)).catchError((_) => _set(() => _onDuty = const [])),
       // Pharmacies have their own section above; the rest is what to discover.
       api
@@ -57,7 +60,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
           .catchError((_) => _set(() => _discover = const [])),
       api.deals(featured: true).then((d) => _set(() => _featured = d)).catchError((_) => _set(() => _featured = const [])),
       api.categories().then((c) => _set(() => _categories = c.isEmpty ? Category.fallback : c)).catchError((_) {}),
-      api.payments().then((p) => _set(() => _payments = p)).catchError((_) => _set(() => _payments = const [])),
+      if (signedIn) api.payments().then((p) => _set(() => _payments = p)).catchError((_) => _set(() => _payments = const [])),
     ]);
   }
 
@@ -74,7 +77,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final username = ref.watch(sessionProvider).username;
+    final session = ref.watch(sessionProvider);
+    final username = session.signedIn ? session.username : null;
     final name = username == null || username.isEmpty ? null : '${username[0].toUpperCase()}${username.substring(1)}';
 
     return RefreshIndicator(
@@ -120,7 +124,13 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 left: 20,
                 right: 20,
                 bottom: 0,
-                child: _PointsCard(points: _points, onTap: () => widget.onOpenTab(3)),
+                child: _PointsCard(
+                  points: _points,
+                  signedIn: session.signedIn,
+                  onTap: session.signedIn
+                      ? () => widget.onOpenTab(3)
+                      : () => ensureSignedIn(context, ref, reason: Strings.signInToSeePoints),
+                ),
               ),
             ],
           ),
@@ -313,12 +323,15 @@ class _AccountMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Hidden until the customer reaches 100 points (the server decides).
     final suggestions = ref.watch(suggestionsLinkProvider).valueOrNull;
+    final signedIn = ref.watch(sessionProvider.select((s) => s.signedIn));
     return PopupMenuButton<String>(
       tooltip: 'Menu',
       offset: const Offset(0, 52),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DjassaRadius.md)),
       onSelected: (v) {
-        if (v == 'account') {
+        if (v == 'sign_in') {
+          ensureSignedIn(context, ref, reason: Strings.signInToPay);
+        } else if (v == 'account') {
           Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'account'), builder: (_) => const AccountScreen()));
         } else if (v == 'about') {
           Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'about_name'), builder: (_) => const AboutNameScreen()));
@@ -333,10 +346,16 @@ class _AccountMenu extends ConsumerWidget {
         }
       },
       itemBuilder: (_) => [
-        const PopupMenuItem(
-          value: 'account',
-          child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.manage_accounts_outlined), title: Text(Strings.account)),
-        ),
+        if (!signedIn)
+          const PopupMenuItem(
+            value: 'sign_in',
+            child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.login_rounded), title: Text(Strings.signInAction)),
+          ),
+        if (signedIn)
+          const PopupMenuItem(
+            value: 'account',
+            child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.manage_accounts_outlined), title: Text(Strings.account)),
+          ),
         const PopupMenuItem(
           value: 'about',
           child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_stories_outlined), title: Text(Strings.aboutNameLink)),
@@ -346,10 +365,11 @@ class _AccountMenu extends ConsumerWidget {
             value: 'suggest',
             child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.help_outline_rounded), title: Text(Strings.suggestions)),
           ),
-        const PopupMenuItem(
-          value: 'logout',
-          child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.logout_rounded), title: Text(Strings.signOut)),
-        ),
+        if (signedIn)
+          const PopupMenuItem(
+            value: 'logout',
+            child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.logout_rounded), title: Text(Strings.signOut)),
+          ),
       ],
       child: Container(
         width: 46,
@@ -370,16 +390,17 @@ class _AccountMenu extends ConsumerWidget {
 /// The loyalty balance, dressed as a membership card: deep green, wax
 /// texture, the balance in the display serif.
 class _PointsCard extends StatelessWidget {
-  const _PointsCard({required this.points, required this.onTap});
+  const _PointsCard({required this.points, required this.signedIn, required this.onTap});
 
   final int? points;
+  final bool signedIn;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '${Strings.myPoints} : ${points ?? 0} ${Strings.points}',
+      label: signedIn ? '${Strings.myPoints} : ${points ?? 0} ${Strings.points}' : '${Strings.pointsSignedOut}. ${Strings.pointsSignedOutHint}',
       child: GestureDetector(
         onTap: onTap,
         child: PatternedSurface(
@@ -398,26 +419,30 @@ class _PointsCard extends StatelessWidget {
                         style: TextStyle(
                             color: Colors.white.withOpacity(0.72), fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
                     const SizedBox(height: 4),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(points == null ? '—' : '$points', style: serifStyle(46, color: Colors.white, height: 1)),
-                        const SizedBox(width: 6),
-                        Text(Strings.points,
-                            style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 15, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+                    if (!signedIn)
+                      Text(Strings.pointsSignedOut, style: serifStyle(34, color: Colors.white, height: 1.1))
+                    else
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(points == null ? '—' : '$points', style: serifStyle(46, color: Colors.white, height: 1)),
+                          const SizedBox(width: 6),
+                          Text(Strings.points,
+                              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 15, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
                   ],
                 ),
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
                 decoration: BoxDecoration(color: Colors.white.withOpacity(0.14), borderRadius: BorderRadius.circular(99)),
-                child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(Strings.seeRewardsShort, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
-                  SizedBox(width: 2),
-                  Icon(Icons.chevron_right_rounded, size: 18, color: Colors.white),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text(signedIn ? Strings.seeRewardsShort : Strings.pointsSignedOutHint,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  const SizedBox(width: 2),
+                  const Icon(Icons.chevron_right_rounded, size: 18, color: Colors.white),
                 ]),
               ),
             ],

@@ -10,6 +10,7 @@ import '../ui/directions.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'scan_screen.dart';
+import 'sign_in_gate.dart';
 import 'venue_media_strip.dart';
 
 class VenueScreen extends ConsumerStatefulWidget {
@@ -43,6 +44,8 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
   }
 
   Future<void> _scan() async {
+    final signedIn = await ensureSignedIn(context, ref, reason: Strings.signInToPay);
+    if (!signedIn || !mounted) return;
     await Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'scan'), builder: (_) => const ScanScreen()));
     _load(); // points here may have changed
   }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../core/providers.dart';
 
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
@@ -9,14 +12,27 @@ import 'phone_sign_in_form.dart';
 /// Sign-in with a phone number and an SMS code. The number is the customer's
 /// account (CONCEPT.md, Tier 0), and the same key the counter uses for
 /// loyalty, so points earned at a counter are there on first sign-in.
-class SignInScreen extends StatelessWidget {
-  const SignInScreen({super.key});
+///
+/// Opened over the app when the customer wants to pay or see their points
+/// (sign_in_gate.dart), with [reason] saying why; it closes itself once the
+/// session is open.
+class SignInScreen extends ConsumerWidget {
+  const SignInScreen({super.key, this.reason});
+
+  final String? reason;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final top = MediaQuery.paddingOf(context).top;
+    ref.listen(sessionProvider.select((s) => s.signedIn), (_, signedIn) {
+      if (signedIn && Navigator.of(context).canPop()) Navigator.of(context).pop(true);
+    });
 
     return Scaffold(
+      appBar: Navigator.of(context).canPop()
+          ? AppBar(backgroundColor: Colors.transparent, foregroundColor: Colors.white, elevation: 0)
+          : null,
+      extendBodyBehindAppBar: true,
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -37,7 +53,8 @@ class SignInScreen extends StatelessWidget {
                 const SizedBox(height: 22),
                 Text(Strings.signInTitle, style: serifStyle(42, color: Colors.white)),
                 const SizedBox(height: 8),
-                Text(Strings.signInSubtitle, style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 15.5, height: 1.4)),
+                Text(reason ?? Strings.signInSubtitle,
+                    style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 15.5, height: 1.4)),
                 const SizedBox(height: 22),
                 const Wrap(spacing: 8, runSpacing: 8, children: [
                   _Feature(icon: Icons.restaurant_rounded, label: 'Maquis'),

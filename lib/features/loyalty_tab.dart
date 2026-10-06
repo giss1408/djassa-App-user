@@ -8,6 +8,7 @@ import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'sign_in_gate.dart';
 
 /// Points per venue, progress to the next reward, and where points came from.
 class LoyaltyTab extends ConsumerStatefulWidget {
@@ -30,6 +31,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
 
   Future<void> _load() async {
     setState(() => _error = null);
+    if (!ref.read(sessionProvider).signedIn) return;
     try {
       final l = await ref.read(djassaApiProvider).loyalty();
       if (mounted) setState(() => _loyalty = l);
@@ -54,6 +56,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
 
   @override
   Widget build(BuildContext context) {
+    if (!ref.watch(sessionProvider.select((s) => s.signedIn))) return const _SignedOut();
     final l = _loyalty;
     final text = Theme.of(context).textTheme;
 
@@ -342,6 +345,37 @@ class _VoucherSheet extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// The loyalty tab before sign-in: what points are, and the way in.
+class _SignedOut extends ConsumerWidget {
+  const _SignedOut();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final text = Theme.of(context).textTheme;
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const GradientHeader(title: Strings.loyaltyTitle, subtitle: Strings.myPoints, gradient: DjassaColors.loyaltyGradient),
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(Strings.signInToSeePoints, style: text.bodyLarge),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => ensureSignedIn(context, ref, reason: Strings.signInToSeePoints),
+                child: const Text(Strings.signInAction),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -8,7 +8,6 @@ import 'core/monitoring/error_reporter.dart';
 import 'core/monitoring/usage_tracker.dart';
 import 'core/providers.dart';
 import 'features/shell.dart';
-import 'features/sign_in_screen.dart';
 import 'ui/theme.dart';
 
 void main() {
@@ -49,26 +48,9 @@ class _SessionGate extends ConsumerWidget {
     if (!session.checked) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    // The shell reports its tabs itself.
-    return session.signedIn ? const AppShell() : const _SignInTracked();
+    // Signed in or not: offers, shops and pharmacies are for everyone, and
+    // sign-in opens over the app when paying or points need it. The shell
+    // reports its tabs itself.
+    return const AppShell();
   }
-}
-
-/// Records the sign-in screen, which is swapped in rather than pushed.
-class _SignInTracked extends ConsumerStatefulWidget {
-  const _SignInTracked();
-
-  @override
-  ConsumerState<_SignInTracked> createState() => _SignInTrackedState();
-}
-
-class _SignInTrackedState extends ConsumerState<_SignInTracked> {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(usageTrackerProvider).screen('sign_in');
-  }
-
-  @override
-  Widget build(BuildContext context) => const SignInScreen();
 }

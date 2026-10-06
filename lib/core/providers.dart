@@ -50,6 +50,7 @@ final djassaApiProvider = Provider<DjassaApi>((ref) => DjassaApi(ref.watch(apiCl
 /// The suggestions WhatsApp link, null while hidden. Never an error: a
 /// failure just keeps the menu entry out of sight.
 final suggestionsLinkProvider = FutureProvider.autoDispose<String?>((ref) async {
+  if (!ref.watch(sessionProvider.select((s) => s.signedIn))) return null;
   try {
     return await ref.watch(djassaApiProvider).suggestionsWhatsapp();
   } catch (_) {

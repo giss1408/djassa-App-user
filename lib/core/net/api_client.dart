@@ -86,16 +86,22 @@ class ApiClient {
   void close() => _inner.close();
 
   /// GET returning a decoded JSON object.
+  ///
+  /// [optionalAuth]: the public catalogue. The token goes along when there is
+  /// one (so a shop page can show the customer's own points), and the request
+  /// is still made without one, for someone browsing before signing in.
   Future<Map<String, Object?>> getJson(
     String path, {
     Map<String, String>? query,
     bool authenticated = true,
+    bool optionalAuth = false,
   }) async {
     final body = await _send(
       'GET',
       path,
       query: query,
       authenticated: authenticated,
+      optionalAuth: optionalAuth,
     );
     return _asObject(body);
   }
@@ -105,12 +111,14 @@ class ApiClient {
     String path, {
     Map<String, String>? query,
     bool authenticated = true,
+    bool optionalAuth = false,
   }) async {
     final body = await _send(
       'GET',
       path,
       query: query,
       authenticated: authenticated,
+      optionalAuth: optionalAuth,
     );
     if (body is! List) {
       throw const MalformedResponseException('Expected a JSON array');
@@ -159,6 +167,7 @@ class ApiClient {
     Object? jsonBody,
     String? idempotencyKey,
     required bool authenticated,
+    bool optionalAuth = false,
     bool isRetry = false,
   }) async {
     final uri = Uri.parse('$_baseUrl$path').replace(
@@ -173,10 +182,13 @@ class ApiClient {
 
     if (authenticated) {
       final token = await _tokenProvider();
-      if (token == null || token.isEmpty) {
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      } else if (optionalAuth) {
+        authenticated = false; // browsing signed out: nothing to renew on a 401
+      } else {
         throw const UnauthorizedException('Not signed in');
       }
-      request.headers['Authorization'] = 'Bearer $token';
     }
     if (idempotencyKey != null) {
       request.headers['Idempotency-Key'] = idempotencyKey;
@@ -218,6 +230,7 @@ class ApiClient {
           jsonBody: jsonBody,
           idempotencyKey: idempotencyKey,
           authenticated: authenticated,
+          optionalAuth: optionalAuth,
           isRetry: true,
         );
       }

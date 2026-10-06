@@ -9,6 +9,7 @@ import 'loyalty_tab.dart';
 import 'deals_tab.dart';
 import 'explore_tab.dart';
 import 'scan_screen.dart';
+import 'sign_in_gate.dart';
 
 /// Four tabs (home, explore, deals, loyalty) around one central action. Paying is the gesture that makes the
 /// app essential (it earns the points and builds the merchant's history), so
@@ -37,6 +38,8 @@ class _AppShellState extends ConsumerState<AppShell> {
   int _refresh = 0;
 
   Future<void> _scan() async {
+    final signedIn = await ensureSignedIn(context, ref, reason: Strings.signInToPay);
+    if (!signedIn || !mounted) return;
     await Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'scan'), builder: (_) => const ScanScreen()));
     if (mounted) setState(() => _refresh++);
   }
@@ -57,11 +60,13 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Signing in or out reloads the tabs that show the customer's own data.
+    final signedIn = ref.watch(sessionProvider.select((s) => s.signedIn));
     final tabs = [
-      HomeTab(key: ValueKey('home$_refresh'), onScan: _scan, onOpenTab: _go, onExplore: _openExplore),
+      HomeTab(key: ValueKey('home$_refresh$signedIn'), onScan: _scan, onOpenTab: _go, onExplore: _openExplore),
       ExploreTab(key: _explore),
       const DealsTab(),
-      LoyaltyTab(key: ValueKey('loyalty$_refresh')),
+      LoyaltyTab(key: ValueKey('loyalty$_refresh$signedIn')),
     ];
     final bottom = MediaQuery.paddingOf(context).bottom;
     return Scaffold(
