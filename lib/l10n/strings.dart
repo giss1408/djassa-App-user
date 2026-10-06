@@ -22,7 +22,7 @@ class Strings {
   static String loyaltyErased(int points) => 'Accord retiré. $points points effacés.';
   static const loyaltyGiven = 'Merci ! Vos prochains achats vous rapportent des points.';
   // Suggestions to the Djassa team (unlocked at 100 points).
-  static const suggestions = 'Suggérer une idée';
+  static const suggestions = 'Aide';
   static const suggestionsFailed = "WhatsApp n'a pas pu s'ouvrir.";
   // Corner banner on a deal's image.
   static const ribbonBonPlan = 'BON PLAN';
