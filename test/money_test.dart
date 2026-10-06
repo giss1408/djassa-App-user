@@ -1,4 +1,4 @@
-import 'package:djassa_user/core/model/money.dart';
+import 'package:hossouko_user/core/model/money.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

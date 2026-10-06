@@ -10,8 +10,8 @@ import 'net/api_client.dart';
 ///
 /// The catalogue (categories, offers, shops, pharmacies) works signed out;
 /// paying, points, history and the account need a session (sign_in_gate.dart).
-class DjassaApi {
-  DjassaApi(this._client);
+class HossoukoApi {
+  HossoukoApi(this._client);
 
   final ApiClient _client;
 
@@ -90,7 +90,7 @@ class DjassaApi {
   Future<Voucher> redeem(int rewardId) async =>
       Voucher.fromJson(await _client.postJson('/api/customer/loyalty/redeem', body: {'reward_id': rewardId}));
 
-  /// Whether Djassa may tie this customer's payments to their number.
+  /// Whether Hossouko may tie this customer's payments to their number.
   Future<bool> loyaltyConsent() async => (await _client.getJson('/api/customer/loyalty-consent'))['active'] == true;
 
   Future<void> giveLoyaltyConsent() => _client.putJson('/api/customer/loyalty-consent', body: {'consent_version': loyaltyConsentVersion});
@@ -98,7 +98,7 @@ class DjassaApi {
   /// Withdraws consent: the server erases every point. Returns how many.
   Future<int> withdrawLoyaltyConsent() async => ((await _client.deleteJson('/api/customer/loyalty-consent'))['points_erased'] as int?) ?? 0;
 
-  /// The WhatsApp link to the Djassa team, or null while it is locked
+  /// The WhatsApp link to the Hossouko team, or null while it is locked
   /// (under 100 points) or not set up.
   Future<String?> suggestionsWhatsapp() async {
     final json = await _client.getJson('/api/support/suggestions/whatsapp');

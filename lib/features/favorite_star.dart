@@ -21,7 +21,7 @@ class FavoriteStar extends ConsumerWidget {
     final on = ref.watch(personalListsProvider.select((s) => s.isFavorite(venue.id)));
     final icon = Icon(
       on ? Icons.star_rounded : Icons.star_outline_rounded,
-      color: on ? const Color(0xFFF5B800) : (onDark ? Colors.white : DjassaColors.muted),
+      color: on ? const Color(0xFFF5B800) : (onDark ? Colors.white : HossoukoColors.muted),
     );
     final button = IconButton(
       tooltip: on ? Strings.removeFavorite : Strings.addFavorite,

@@ -17,10 +17,10 @@ class ReceiptScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final p = payment;
     final (title, icon, color, tint) = p.succeeded
-        ? (Strings.paymentDone, Icons.check_rounded, DjassaColors.success, DjassaColors.pharmacyTint)
+        ? (Strings.paymentDone, Icons.check_rounded, HossoukoColors.success, HossoukoColors.pharmacyTint)
         : p.failed
-            ? (Strings.paymentFailed, Icons.close_rounded, DjassaColors.danger, const Color(0xFFFDE4E4))
-            : (Strings.paymentPending, Icons.schedule_rounded, DjassaColors.muted, DjassaColors.sand);
+            ? (Strings.paymentFailed, Icons.close_rounded, HossoukoColors.danger, const Color(0xFFFDE4E4))
+            : (Strings.paymentPending, Icons.schedule_rounded, HossoukoColors.muted, HossoukoColors.sand);
     final wallet = Wallet.fromWire(p.walletProvider);
 
     return PopScope(
@@ -64,12 +64,12 @@ class ReceiptScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(francs(p.amount), style: text.displaySmall?.copyWith(fontSize: 52), textAlign: TextAlign.center),
                     const SizedBox(height: 4),
-                    Text(p.venueName, style: text.titleMedium?.copyWith(color: DjassaColors.inkSoft), textAlign: TextAlign.center),
+                    Text(p.venueName, style: text.titleMedium?.copyWith(color: HossoukoColors.inkSoft), textAlign: TextAlign.center),
                     if (p.succeeded && p.pointsAwarded > 0) ...[
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(gradient: DjassaColors.loyaltyGradient, borderRadius: BorderRadius.circular(99)),
+                        decoration: BoxDecoration(gradient: HossoukoColors.loyaltyGradient, borderRadius: BorderRadius.circular(99)),
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
                           const Icon(Icons.stars_rounded, color: Color(0xFFFFC9A8), size: 20),
                           const SizedBox(width: 8),

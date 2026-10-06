@@ -74,8 +74,8 @@ class _AppShellState extends ConsumerState<AppShell> {
       body: IndexedStack(index: _tab, children: tabs),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: DjassaColors.surface,
-          border: Border(top: BorderSide(color: DjassaColors.line)),
+          color: HossoukoColors.surface,
+          border: Border(top: BorderSide(color: HossoukoColors.line)),
           boxShadow: [BoxShadow(color: Color(0x0F000000), blurRadius: 20, offset: Offset(0, -4))],
         ),
         padding: EdgeInsets.only(bottom: bottom),
@@ -141,12 +141,12 @@ class _PayButton extends StatelessWidget {
                   height: 64,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [DjassaColors.orange, DjassaColors.orangeDark],
+                      colors: [HossoukoColors.orange, HossoukoColors.orangeDark],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     shape: BoxShape.circle,
-                    border: Border.all(color: DjassaColors.surface, width: 4),
+                    border: Border.all(color: HossoukoColors.surface, width: 4),
                     boxShadow: const [BoxShadow(color: Color(0x55C94A22), blurRadius: 16, offset: Offset(0, 6))],
                   ),
                   child: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white, size: 28),
@@ -154,7 +154,7 @@ class _PayButton extends StatelessWidget {
               ),
               const Positioned(
                 bottom: 12,
-                child: Text(Strings.scan, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: DjassaColors.orangeDeep)),
+                child: Text(Strings.scan, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: HossoukoColors.orangeDeep)),
               ),
             ],
           ),
@@ -175,7 +175,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? DjassaColors.orangeDeep : DjassaColors.muted;
+    final color = selected ? HossoukoColors.orangeDeep : HossoukoColors.muted;
     return Expanded(
       child: Semantics(
         selected: selected,
@@ -191,7 +191,7 @@ class _NavItem extends StatelessWidget {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                 decoration: BoxDecoration(
-                  color: selected ? DjassaColors.orangeTint : Colors.transparent,
+                  color: selected ? HossoukoColors.orangeTint : Colors.transparent,
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: Icon(selected ? active : icon, color: color, size: 24),

@@ -1,5 +1,5 @@
 /// A shop photo or video, as `GET /api/venues/{id}` sends it. The server
-/// already shrank it (djassa-BE app/services/media_processing.py); the app
+/// already shrank it (hossouko-BE app/services/media_processing.py); the app
 /// still chooses the cheapest size for each place it is shown.
 class VenueMedia {
   const VenueMedia({

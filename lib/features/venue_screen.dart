@@ -38,7 +38,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final v = await ref.read(djassaApiProvider).venue(widget.venueId);
+      final v = await ref.read(hossoukoApiProvider).venue(widget.venueId);
       if (mounted) setState(() => _venue = v);
       ref.read(personalListsProvider.notifier).viewed(v);
     } on Exception catch (e) {
@@ -103,8 +103,8 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                       offset: const Offset(0, -26),
                       child: Container(
                         decoration: const BoxDecoration(
-                          color: DjassaColors.paper,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(DjassaRadius.xl)),
+                          color: HossoukoColors.paper,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(HossoukoRadius.xl)),
                         ),
                         padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
                         child: Column(
@@ -112,20 +112,20 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                           children: [
                             Wrap(spacing: 6, runSpacing: 6, children: [
                               Tag(Category.labelOf(v.category), icon: CategoryStyle.of(v.category).icon),
-                              if (v.acceptsPayment) const Tag.djassa(),
+                              if (v.acceptsPayment) const Tag.hossouko(),
                               if (v.isSample) const Tag.sample(),
                             ]),
                             const SizedBox(height: 12),
                             Text(v.name, style: text.headlineMedium),
                             const SizedBox(height: 4),
                             Row(children: [
-                              const Icon(Icons.place_outlined, size: 17, color: DjassaColors.muted),
+                              const Icon(Icons.place_outlined, size: 17, color: HossoukoColors.muted),
                               const SizedBox(width: 4),
-                              Text(v.commune, style: text.bodyMedium?.copyWith(color: DjassaColors.muted)),
+                              Text(v.commune, style: text.bodyMedium?.copyWith(color: HossoukoColors.muted)),
                             ]),
                             if (v.description != null) ...[
                               const SizedBox(height: 14),
-                              Text(v.description!, style: text.bodyMedium?.copyWith(color: DjassaColors.inkSoft)),
+                              Text(v.description!, style: text.bodyMedium?.copyWith(color: HossoukoColors.inkSoft)),
                             ],
                             if (v.media.isNotEmpty) ...[
                               const SizedBox(height: 16),
@@ -167,12 +167,12 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                             Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: v.acceptsPayment ? DjassaColors.orangeTint : const Color(0xFFF0EEE8),
-                                borderRadius: BorderRadius.circular(DjassaRadius.md),
+                                color: v.acceptsPayment ? HossoukoColors.orangeTint : const Color(0xFFF0EEE8),
+                                borderRadius: BorderRadius.circular(HossoukoRadius.md),
                               ),
                               child: Row(children: [
                                 Icon(v.acceptsPayment ? Icons.qr_code_2_rounded : Icons.qr_code_2_outlined,
-                                    color: v.acceptsPayment ? DjassaColors.orangeDeep : DjassaColors.muted),
+                                    color: v.acceptsPayment ? HossoukoColors.orangeDeep : HossoukoColors.muted),
                                 const SizedBox(width: 12),
                                 Expanded(
                                     child: Text(v.acceptsPayment ? Strings.payHereHint : Strings.noPaymentHere, style: text.bodyMedium)),
@@ -187,7 +187,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                               const SizedBox(height: 24),
                               Row(children: [
                                 Expanded(child: Text(Strings.yourPointsHere, style: text.titleLarge)),
-                                Text('${v.myPoints} ${Strings.pts}', style: text.titleLarge?.copyWith(color: DjassaColors.green)),
+                                Text('${v.myPoints} ${Strings.pts}', style: text.titleLarge?.copyWith(color: HossoukoColors.green)),
                               ]),
                               Text('${v.pointsPer100} ${Strings.pointsPer100}', style: text.bodySmall),
                               const SizedBox(height: 12),
@@ -200,12 +200,12 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(children: [
-                                          const Icon(Icons.card_giftcard_rounded, size: 20, color: DjassaColors.orangeDeep),
+                                          const Icon(Icons.card_giftcard_rounded, size: 20, color: HossoukoColors.orangeDeep),
                                           const SizedBox(width: 10),
                                           Expanded(child: Text(r.title, style: text.titleSmall)),
                                           Text(v.myPoints >= r.costPoints ? Strings.unlocked : '${r.costPoints} ${Strings.pts}',
                                               style: text.labelMedium
-                                                  ?.copyWith(color: v.myPoints >= r.costPoints ? DjassaColors.green : DjassaColors.muted)),
+                                                  ?.copyWith(color: v.myPoints >= r.costPoints ? HossoukoColors.green : HossoukoColors.muted)),
                                         ]),
                                         const SizedBox(height: 10),
                                         ClipRRect(
@@ -213,8 +213,8 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
                                           child: LinearProgressIndicator(
                                             value: (v.myPoints / r.costPoints).clamp(0, 1).toDouble(),
                                             minHeight: 6,
-                                            backgroundColor: DjassaColors.greenTint,
-                                            color: DjassaColors.green,
+                                            backgroundColor: HossoukoColors.greenTint,
+                                            color: HossoukoColors.green,
                                           ),
                                         ),
                                       ],
@@ -249,8 +249,8 @@ class _InfoRow extends StatelessWidget {
         Container(
           width: 38,
           height: 38,
-          decoration: BoxDecoration(color: DjassaColors.sand, borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, size: 20, color: DjassaColors.orangeDeep),
+          decoration: BoxDecoration(color: HossoukoColors.sand, borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, size: 20, color: HossoukoColors.orangeDeep),
         ),
         const SizedBox(width: 12),
         Expanded(

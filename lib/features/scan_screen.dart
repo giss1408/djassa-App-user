@@ -50,7 +50,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     if (raw == null) return;
     final code = parsePayQr(raw);
     if (code == null) {
-      setState(() => _error = Strings.notDjassaQr);
+      setState(() => _error = Strings.notHossoukoQr);
       return;
     }
     await _check(code);
@@ -64,7 +64,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     await _controller.stop();
     HapticFeedback.mediumImpact();
     try {
-      final target = await ref.read(djassaApiProvider).checkPayCode(code);
+      final target = await ref.read(hossoukoApiProvider).checkPayCode(code);
       if (!mounted) return;
       await Navigator.of(context).pushReplacement(MaterialPageRoute(settings: const RouteSettings(name: 'confirm_pay'), builder: (_) => ConfirmPayScreen(target: target)));
     } on ApiException catch (e) {
@@ -191,7 +191,7 @@ class _Pill extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 32),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.55), borderRadius: BorderRadius.circular(DjassaRadius.md)),
+      decoration: BoxDecoration(color: Colors.black.withOpacity(0.55), borderRadius: BorderRadius.circular(HossoukoRadius.md)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -221,7 +221,7 @@ class _ViewfinderPainter extends CustomPainter {
       Paint()..color = Colors.black.withOpacity(0.58),
     );
     final paint = Paint()
-      ..color = DjassaColors.orange
+      ..color = HossoukoColors.orange
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;

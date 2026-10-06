@@ -89,7 +89,7 @@ class SignInUnavailable extends SignInResult {
 
 /// Sign-in with phone number + SMS code, session renewal, sign-out.
 ///
-/// The backend (`djassa-BE/backend-api/app/api/auth.py`) sends a 6-digit code
+/// The backend (`hossouko-BE/backend-api/app/api/auth.py`) sends a 6-digit code
 /// to the number, and exchanges it for a 60-minute access token and a 90-day
 /// single-use refresh token. Both live in [TokenStore]. An expired access
 /// token is renewed with [refresh] before or after the request that needs it
@@ -227,7 +227,7 @@ class AuthRepository {
     await _tokenStore.clear();
   }
 
-  // --- Account recovery (djassa-BE app/api/account.py) ---------------------
+  // --- Account recovery (hossouko-BE app/api/account.py) ---------------------
 
   /// Ends every session but this device's: a lost or stolen phone that is
   /// still signed in loses access within the hour. Returns how many ended.
@@ -285,7 +285,7 @@ class AuthRepository {
     }
   }
 
-  /// Lost number, step 2: files the request a Djassa admin reviews. Returns
+  /// Lost number, step 2: files the request a Hossouko admin reviews. Returns
   /// the server's message saying what happens next.
   Future<String> fileRecovery({
     required String newPhone,

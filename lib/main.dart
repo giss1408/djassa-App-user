@@ -18,22 +18,22 @@ void main() {
   final reporter = ErrorReporter(app: 'user')..install();
   // Installs and what is seen, never tied to the customer's account.
   final usage = UsageTracker(app: 'user');
-  runApp(ProviderScope(overrides: [usageTrackerProvider.overrideWithValue(usage)], child: const DjassaUserApp()));
+  runApp(ProviderScope(overrides: [usageTrackerProvider.overrideWithValue(usage)], child: const HossoukoUserApp()));
   // Whatever an earlier session could not send goes now, once.
   unawaited(reporter.flush());
   unawaited(usage.start());
 }
 
-class DjassaUserApp extends ConsumerWidget {
-  const DjassaUserApp({super.key});
+class HossoukoUserApp extends ConsumerWidget {
+  const HossoukoUserApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Djassa',
+      title: 'Hossouko',
       debugShowCheckedModeBanner: false,
       navigatorObservers: [ref.read(usageTrackerProvider).navigatorObserver],
-      theme: djassaTheme(),
+      theme: hossoukoTheme(),
       home: const _SessionGate(),
     );
   }

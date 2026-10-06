@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "ci.djassa.djassa_user"
+    namespace = "ci.hossouko.hossouko_user"
     // mobile_scanner 6 (CameraX 1.5) compiles against API 36; Flutter 3.24's
     // default is 34. compileSdk only unlocks APIs, it does not change runtime
     // behaviour (that is targetSdk).
@@ -33,7 +33,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "ci.djassa.djassa_user"
+        applicationId = "ci.hossouko.hossouko_user"
         // 23: CameraX 1.5 (mobile_scanner) requires Android 6+.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
@@ -47,7 +47,7 @@ android {
 
     // One APK per ABI keeps each download small on a prepaid bundle; the
     // universal APK is for anyone unsure which phone they have. Shared by a
-    // link on WhatsApp (see djassa-Web /app).
+    // link on WhatsApp (see hossouko-Web /app).
     splits {
         abi {
             enable = true

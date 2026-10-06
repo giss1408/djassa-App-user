@@ -29,7 +29,7 @@ class GradientHeader extends StatelessWidget {
     this.leading,
     this.trailing,
     this.child,
-    this.gradient = DjassaColors.headerGradient,
+    this.gradient = HossoukoColors.headerGradient,
     this.bottomPadding = 22,
   });
 
@@ -46,7 +46,7 @@ class GradientHeader extends StatelessWidget {
     final top = MediaQuery.paddingOf(context).top;
     return PatternedSurface(
       gradient: gradient,
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(DjassaRadius.xl)),
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(HossoukoRadius.xl)),
       padding: EdgeInsets.fromLTRB(20, top + 18, 20, bottomPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +79,7 @@ class GradientHeader extends StatelessWidget {
   }
 }
 
-/// A gradient surface carrying the Djassa wax-print texture. The pattern is
+/// A gradient surface carrying the Hossouko wax-print texture. The pattern is
 /// static and painted once behind a [RepaintBoundary], so it costs nothing
 /// while scrolling.
 class PatternedSurface extends StatelessWidget {
@@ -119,8 +119,8 @@ class PatternedSurface extends StatelessWidget {
   }
 }
 
-/// Djassa's texture: rows of concentric rings and diamonds, the geometry of
-/// the wax prints sold in every djassa. Thin white strokes at low opacity so
+/// Hossouko's texture: rows of concentric rings and diamonds, the geometry of
+/// the wax prints sold in every hossouko. Thin white strokes at low opacity so
 /// it reads as fabric, not decoration, and never fights the text on top.
 class WaxPatternPainter extends CustomPainter {
   const WaxPatternPainter({this.opacity = 0.09, this.color = Colors.white, this.cell = 44});
@@ -230,9 +230,9 @@ class SectionHeader extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(actionLabel!, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: DjassaColors.orangeDeep)),
+                  Text(actionLabel!, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: HossoukoColors.orangeDeep)),
                   const SizedBox(width: 2),
-                  const Icon(Icons.chevron_right_rounded, size: 18, color: DjassaColors.orangeDeep),
+                  const Icon(Icons.chevron_right_rounded, size: 18, color: HossoukoColors.orangeDeep),
                 ]),
               ),
             ),
@@ -245,7 +245,7 @@ class SectionHeader extends StatelessWidget {
 /// Small pulsing-free "live" dot: a solid dot inside a soft halo. Static on
 /// purpose, a looping animation drains battery on the screen left open.
 class LiveDot extends StatelessWidget {
-  const LiveDot({super.key, this.color = DjassaColors.pharmacy});
+  const LiveDot({super.key, this.color = HossoukoColors.pharmacy});
 
   final Color color;
 
@@ -273,10 +273,10 @@ class SoftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color ?? DjassaColors.surface,
+      color: color ?? HossoukoColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DjassaRadius.lg),
-        side: const BorderSide(color: DjassaColors.line),
+        borderRadius: BorderRadius.circular(HossoukoRadius.lg),
+        side: const BorderSide(color: HossoukoColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
@@ -286,18 +286,18 @@ class SoftCard extends StatelessWidget {
 
 /// Small rounded label. Meaning is carried by the words, never colour alone.
 class Tag extends StatelessWidget {
-  const Tag(this.label, {super.key, this.icon, this.color = DjassaColors.inkSoft, this.background = DjassaColors.sand});
+  const Tag(this.label, {super.key, this.icon, this.color = HossoukoColors.inkSoft, this.background = HossoukoColors.sand});
 
-  const Tag.djassa({super.key})
-      : label = Strings.acceptsDjassa,
+  const Tag.hossouko({super.key})
+      : label = Strings.acceptsHossouko,
         icon = Icons.qr_code_2_rounded,
-        color = DjassaColors.orangeDeep,
-        background = DjassaColors.orangeTint;
+        color = HossoukoColors.orangeDeep,
+        background = HossoukoColors.orangeTint;
 
   const Tag.sample({super.key})
       : label = Strings.sample,
         icon = Icons.science_outlined,
-        color = DjassaColors.muted,
+        color = HossoukoColors.muted,
         background = const Color(0xFFF0EEE8);
 
   final String label;
@@ -348,7 +348,7 @@ class CategoryStyle {
       [Color(0xFFE65E32), Color(0xFF9E3517)],
     ]),
     'pharmacy': CategoryStyle(Icons.local_pharmacy_rounded, [
-      [Color(0xFF2BB673), DjassaColors.pharmacy],
+      [Color(0xFF2BB673), HossoukoColors.pharmacy],
     ]),
     'superette': CategoryStyle(Icons.shopping_basket_rounded, [
       [Color(0xFF75975D), Color(0xFF234B39)],
@@ -396,10 +396,10 @@ class CategoryFilter extends StatelessWidget {
         itemBuilder: (context, i) {
           final c = options[i];
           final isSelected = selected == c?.key;
-          final color = isSelected ? Colors.white : DjassaColors.ink;
+          final color = isSelected ? Colors.white : HossoukoColors.ink;
           return ChoiceChip(
             avatar: Icon(c == null ? Icons.apps_rounded : CategoryStyle.of(c.key).icon,
-                size: 18, color: isSelected ? Colors.white : DjassaColors.orangeDeep),
+                size: 18, color: isSelected ? Colors.white : HossoukoColors.orangeDeep),
             label: Text(c?.plural ?? Strings.allCategories),
             selected: isSelected,
             labelStyle: TextStyle(fontWeight: FontWeight.w700, color: color),
@@ -442,7 +442,7 @@ class VenueThumb extends StatelessWidget {
   }
 }
 
-/// A venue in a list: thumbnail, name, place, what it offers with Djassa.
+/// A venue in a list: thumbnail, name, place, what it offers with Hossouko.
 ///
 /// With [cover], the venue's generated cover spans the card, the way food
 /// apps lead with the place. Used where browsing is the point (maquis); the
@@ -464,7 +464,7 @@ class VenueCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final place = Row(
       children: [
-        const Icon(Icons.place_outlined, size: 15, color: DjassaColors.muted),
+        const Icon(Icons.place_outlined, size: 15, color: HossoukoColors.muted),
         const SizedBox(width: 3),
         Expanded(
           child: Text(
@@ -477,10 +477,10 @@ class VenueCard extends StatelessWidget {
       ],
     );
     final tags = [
-      if (venue.acceptsPayment) const Tag.djassa(),
+      if (venue.acceptsPayment) const Tag.hossouko(),
       if (venue.pointsPer100 > 0)
         Tag('${venue.pointsPer100} ${Strings.pointsPer100}',
-            icon: Icons.stars_rounded, color: DjassaColors.green, background: DjassaColors.greenTint),
+            icon: Icons.stars_rounded, color: HossoukoColors.green, background: HossoukoColors.greenTint),
       if (venue.isSample && !cover) const Tag.sample(),
     ];
 
@@ -511,7 +511,7 @@ class VenueCard extends StatelessWidget {
                     if (venue.specialties != null) ...[
                       const SizedBox(height: 6),
                       Text(venue.specialties!,
-                          style: text.bodyMedium?.copyWith(color: DjassaColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          style: text.bodyMedium?.copyWith(color: HossoukoColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ],
                     if (tags.isNotEmpty) ...[
                       const SizedBox(height: 12),
@@ -550,7 +550,7 @@ class VenueCard extends StatelessWidget {
                       if (venue.specialties != null) ...[
                         const SizedBox(height: 6),
                         Text(venue.specialties!,
-                            style: text.bodyMedium?.copyWith(color: DjassaColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            style: text.bodyMedium?.copyWith(color: HossoukoColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
                       ],
                     ],
                   ),
@@ -579,7 +579,7 @@ class SampleNotice extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(color: DjassaColors.warningTint, borderRadius: BorderRadius.circular(DjassaRadius.md)),
+      decoration: BoxDecoration(color: HossoukoColors.warningTint, borderRadius: BorderRadius.circular(HossoukoRadius.md)),
       child: const Row(
         children: [
           Icon(Icons.info_outline_rounded, size: 18, color: Color(0xFF8A6D1F)),
@@ -609,8 +609,8 @@ class EmptyState extends StatelessWidget {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(color: DjassaColors.sand, shape: BoxShape.circle),
-            child: Icon(icon, size: 34, color: DjassaColors.orangeDeep),
+            decoration: const BoxDecoration(color: HossoukoColors.sand, shape: BoxShape.circle),
+            child: Icon(icon, size: 34, color: HossoukoColors.orangeDeep),
           ),
           const SizedBox(height: 16),
           Text(title, style: text.titleMedium, textAlign: TextAlign.center),
@@ -713,7 +713,7 @@ class CommuneFilter extends StatelessWidget {
           return ChoiceChip(
             label: Text(value ?? Strings.allCommunes),
             selected: isSelected,
-            labelStyle: TextStyle(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : DjassaColors.ink),
+            labelStyle: TextStyle(fontWeight: FontWeight.w700, color: isSelected ? Colors.white : HossoukoColors.ink),
             onSelected: (_) => onChanged(value),
           );
         },
@@ -845,7 +845,7 @@ class Ticket extends StatelessWidget {
   final Widget top;
   final Widget bottom;
 
-  static const _radius = Radius.circular(DjassaRadius.lg);
+  static const _radius = Radius.circular(HossoukoRadius.lg);
 
   @override
   Widget build(BuildContext context) {
@@ -854,12 +854,12 @@ class Ticket extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DecoratedBox(
-          decoration: const BoxDecoration(color: DjassaColors.surface, borderRadius: BorderRadius.vertical(top: _radius)),
+          decoration: const BoxDecoration(color: HossoukoColors.surface, borderRadius: BorderRadius.vertical(top: _radius)),
           child: top,
         ),
         const SizedBox(height: 24, child: CustomPaint(painter: _TearPainter())),
         DecoratedBox(
-          decoration: const BoxDecoration(color: DjassaColors.surface, borderRadius: BorderRadius.vertical(bottom: _radius)),
+          decoration: const BoxDecoration(color: HossoukoColors.surface, borderRadius: BorderRadius.vertical(bottom: _radius)),
           child: bottom,
         ),
       ],
@@ -881,10 +881,10 @@ class _TearPainter extends CustomPainter {
         ..addOval(Rect.fromCircle(center: Offset(0, y), radius: notch))
         ..addOval(Rect.fromCircle(center: Offset(size.width, y), radius: notch)),
     );
-    canvas.drawPath(strip, Paint()..color = DjassaColors.surface);
+    canvas.drawPath(strip, Paint()..color = HossoukoColors.surface);
 
     final dash = Paint()
-      ..color = DjassaColors.line
+      ..color = HossoukoColors.line
       ..strokeWidth = 1.5;
     const len = 6.0, gap = 5.0;
     for (var x = notch + 8; x < size.width - notch - 8; x += len + gap) {
@@ -907,7 +907,7 @@ String dealHeadline(Deal d) {
 /// The diagonal corner banner on a deal's image: green "BON PLAN", red
 /// "FLASH", or the yellow "PROMO" sticker. Clipped by the parent's corners.
 class DealRibbonBanner extends StatelessWidget {
-  const DealRibbonBanner({super.key, required this.ribbon, required this.child, this.radius = DjassaRadius.md});
+  const DealRibbonBanner({super.key, required this.ribbon, required this.child, this.radius = HossoukoRadius.md});
 
   final DealRibbon ribbon;
   final Widget child;
@@ -916,9 +916,9 @@ class DealRibbonBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color, ink) = switch (ribbon) {
-      DealRibbon.bonPlan => (Strings.ribbonBonPlan, DjassaColors.green, Colors.white),
-      DealRibbon.flash => (Strings.ribbonFlash, DjassaColors.danger, Colors.white),
-      DealRibbon.promo => (Strings.ribbonPromo, const Color(0xFFFFC83D), DjassaColors.ink),
+      DealRibbon.bonPlan => (Strings.ribbonBonPlan, HossoukoColors.green, Colors.white),
+      DealRibbon.flash => (Strings.ribbonFlash, HossoukoColors.danger, Colors.white),
+      DealRibbon.promo => (Strings.ribbonPromo, const Color(0xFFFFC83D), HossoukoColors.ink),
     };
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -959,10 +959,10 @@ class DealCard extends StatelessWidget {
         onTap: onTap,
         child: DealRibbonBanner(
           ribbon: deal.ribbon,
-          radius: DjassaRadius.lg,
+          radius: HossoukoRadius.lg,
           child: PatternedSurface(
             gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(DjassaRadius.lg),
+            borderRadius: BorderRadius.circular(HossoukoRadius.lg),
             patternOpacity: 0.12,
             child: DecoratedBox(
               // Darkens the lower half so white text stays readable on the
@@ -1044,7 +1044,7 @@ class DealCard extends StatelessWidget {
                 ribbon: deal.ribbon,
                 child: PatternedSurface(
                   gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(DjassaRadius.md),
+                  borderRadius: BorderRadius.circular(HossoukoRadius.md),
                   patternOpacity: 0.14,
                   child: Center(
                     child: FittedBox(
@@ -1071,20 +1071,20 @@ class DealCard extends StatelessWidget {
                   Row(children: [
                     if (deal.price != null) ...[
                       Text(francs(deal.price!),
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: DjassaColors.orangeDeep)),
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: HossoukoColors.orangeDeep)),
                       if (deal.originalPrice != null) ...[
                         const SizedBox(width: 6),
                         Text(francs(deal.originalPrice!),
-                            style: const TextStyle(fontSize: 13, color: DjassaColors.muted, decoration: TextDecoration.lineThrough)),
+                            style: const TextStyle(fontSize: 13, color: HossoukoColors.muted, decoration: TextDecoration.lineThrough)),
                       ],
                       const Spacer(),
                     ] else
                       const Spacer(),
-                    Icon(Icons.schedule_rounded, size: 14, color: soon ? DjassaColors.danger : DjassaColors.muted),
+                    Icon(Icons.schedule_rounded, size: 14, color: soon ? HossoukoColors.danger : HossoukoColors.muted),
                     const SizedBox(width: 3),
                     Text(Strings.dealEnds(deal.endsAt),
                         style:
-                            TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: soon ? DjassaColors.danger : DjassaColors.muted)),
+                            TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: soon ? HossoukoColors.danger : HossoukoColors.muted)),
                   ]),
                 ],
               ),
@@ -1106,7 +1106,7 @@ class _SponsoredPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: onDark ? Colors.white : DjassaColors.warningTint,
+        color: onDark ? Colors.white : HossoukoColors.warningTint,
         borderRadius: BorderRadius.circular(99),
       ),
       child: Text(Strings.sponsored.toUpperCase(),

@@ -48,7 +48,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
   // Each block loads on its own: one slow call must not blank the whole page.
   Future<void> _load() async {
-    final api = ref.read(djassaApiProvider);
+    final api = ref.read(hossoukoApiProvider);
     // Points and payments are the customer's own: only with a session.
     final signedIn = ref.read(sessionProvider).signedIn;
     await Future.wait([
@@ -96,8 +96,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 64),
                 child: PatternedSurface(
-                  gradient: DjassaColors.headerGradient,
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(DjassaRadius.xl + 4)),
+                  gradient: HossoukoColors.headerGradient,
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(HossoukoRadius.xl + 4)),
                   padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 14, 12, 96),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                 style: TextStyle(
                                     color: Colors.white.withOpacity(0.8), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.4)),
                             const SizedBox(height: 2),
-                            Text(name ?? 'Djassa',
+                            Text(name ?? 'Hossouko',
                                 style: serifStyle(40, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 6),
                             Text(Strings.homeTagline, style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 14.5)),
@@ -146,7 +146,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                     icon: Icons.qr_code_scanner_rounded,
                     label: Strings.quickScan,
                     color: Colors.white,
-                    background: DjassaColors.orangeDeep,
+                    background: HossoukoColors.orangeDeep,
                     onTap: widget.onScan,
                   ),
                 ),
@@ -154,8 +154,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   child: _QuickAction(
                     icon: Icons.explore_rounded,
                     label: Strings.quickExplore,
-                    color: DjassaColors.orangeDeep,
-                    background: DjassaColors.orangeTint,
+                    color: HossoukoColors.orangeDeep,
+                    background: HossoukoColors.orangeTint,
                     onTap: () => widget.onExplore(null),
                   ),
                 ),
@@ -163,8 +163,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   child: _QuickAction(
                     icon: Icons.local_pharmacy_rounded,
                     label: Strings.quickPharmacy,
-                    color: DjassaColors.pharmacy,
-                    background: DjassaColors.pharmacyTint,
+                    color: HossoukoColors.pharmacy,
+                    background: HossoukoColors.pharmacyTint,
                     onTap: _openPharmacies,
                   ),
                 ),
@@ -172,8 +172,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   child: _QuickAction(
                     icon: Icons.local_offer_rounded,
                     label: Strings.quickDeals,
-                    color: DjassaColors.green,
-                    background: DjassaColors.greenTint,
+                    color: HossoukoColors.green,
+                    background: HossoukoColors.greenTint,
                     onTap: () => widget.onOpenTab(2),
                   ),
                 ),
@@ -347,7 +347,7 @@ class _AccountMenu extends ConsumerWidget {
     return PopupMenuButton<String>(
       tooltip: 'Menu',
       offset: const Offset(0, 52),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DjassaRadius.md)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(HossoukoRadius.md)),
       onSelected: (v) {
         if (v == 'sign_in') {
           ensureSignedIn(context, ref, reason: Strings.signInToPay);
@@ -424,9 +424,9 @@ class _PointsCard extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: PatternedSurface(
-          gradient: DjassaColors.loyaltyGradient,
-          borderRadius: BorderRadius.circular(DjassaRadius.lg),
-          boxShadow: djassaShadowStrong,
+          gradient: HossoukoColors.loyaltyGradient,
+          borderRadius: BorderRadius.circular(HossoukoRadius.lg),
+          boxShadow: hossoukoShadowStrong,
           patternOpacity: 0.07,
           padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
           child: Row(
@@ -486,7 +486,7 @@ class _QuickAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(DjassaRadius.md),
+      borderRadius: BorderRadius.circular(HossoukoRadius.md),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(
@@ -494,13 +494,13 @@ class _QuickAction extends StatelessWidget {
             Container(
               width: 58,
               height: 58,
-              decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(DjassaRadius.md + 4)),
+              decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(HossoukoRadius.md + 4)),
               child: Icon(icon, color: color, size: 26),
             ),
             const SizedBox(height: 8),
             Text(
               label,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: DjassaColors.ink),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: HossoukoColors.ink),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -543,7 +543,7 @@ class _PharmacyMini extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${Strings.untilShort} ${Strings.shortDay(pharmacy.dutyEndsAt!)}',
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: DjassaColors.pharmacy),
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: HossoukoColors.pharmacy),
                       maxLines: 1,
                     ),
                   ],
@@ -554,7 +554,7 @@ class _PharmacyMini extends StatelessWidget {
               IconButton.filled(
                 onPressed: onCall,
                 tooltip: Strings.call,
-                style: IconButton.styleFrom(backgroundColor: DjassaColors.pharmacy, foregroundColor: Colors.white),
+                style: IconButton.styleFrom(backgroundColor: HossoukoColors.pharmacy, foregroundColor: Colors.white),
                 icon: const Icon(Icons.call_rounded, size: 20),
               ),
           ],
@@ -614,10 +614,10 @@ class _MaquisMini extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(99)),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        const Icon(Icons.stars_rounded, size: 14, color: DjassaColors.green),
+                        const Icon(Icons.stars_rounded, size: 14, color: HossoukoColors.green),
                         const SizedBox(width: 3),
                         Text('${venue.pointsPer100} ${Strings.pointsPer100}',
-                            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: DjassaColors.green)),
+                            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: HossoukoColors.green)),
                       ]),
                     ),
                   ),
@@ -631,14 +631,14 @@ class _MaquisMini extends StatelessWidget {
                   Text(venue.name, style: text.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 3),
                   Row(children: [
-                    const Icon(Icons.place_outlined, size: 14, color: DjassaColors.muted),
+                    const Icon(Icons.place_outlined, size: 14, color: HossoukoColors.muted),
                     const SizedBox(width: 2),
                     Expanded(child: Text(venue.commune, style: text.bodySmall, maxLines: 1)),
-                    if (venue.acceptsPayment) const Icon(Icons.qr_code_2_rounded, size: 16, color: DjassaColors.orangeDeep),
+                    if (venue.acceptsPayment) const Icon(Icons.qr_code_2_rounded, size: 16, color: HossoukoColors.orangeDeep),
                   ]),
                   const SizedBox(height: 4),
                   Text(venue.specialties ?? '',
-                      style: text.bodySmall?.copyWith(color: DjassaColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      style: text.bodySmall?.copyWith(color: HossoukoColors.inkSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
@@ -662,7 +662,7 @@ class _CategoryTile extends StatelessWidget {
     final colors = style.colorsFor(0);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(DjassaRadius.md),
+      borderRadius: BorderRadius.circular(HossoukoRadius.md),
       child: SizedBox(
         width: 76,
         child: Column(children: [
@@ -670,15 +670,15 @@ class _CategoryTile extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: DjassaColors.surface,
-              borderRadius: BorderRadius.circular(DjassaRadius.md + 4),
-              border: Border.all(color: DjassaColors.line),
+              color: HossoukoColors.surface,
+              borderRadius: BorderRadius.circular(HossoukoRadius.md + 4),
+              border: Border.all(color: HossoukoColors.line),
             ),
             child: Icon(style.icon, color: colors.last, size: 28),
           ),
           const SizedBox(height: 6),
           Text(category.label,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: DjassaColors.ink),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: HossoukoColors.ink),
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
         ]),
@@ -703,7 +703,7 @@ class _CarouselSkeleton extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(width: 12),
       itemBuilder: (_, __) => Container(
         width: width,
-        decoration: BoxDecoration(color: skeletonColor, borderRadius: BorderRadius.circular(DjassaRadius.lg)),
+        decoration: BoxDecoration(color: skeletonColor, borderRadius: BorderRadius.circular(HossoukoRadius.lg)),
       ),
     );
   }

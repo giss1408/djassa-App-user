@@ -79,21 +79,21 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(DjassaRadius.md),
+      borderRadius: BorderRadius.circular(HossoukoRadius.md),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(DjassaRadius.md),
+        borderRadius: BorderRadius.circular(HossoukoRadius.md),
         child: SizedBox(
           width: 128,
           child: Stack(fit: StackFit.expand, children: [
             ColoredBox(
-              color: DjassaColors.paper,
+              color: HossoukoColors.paper,
               child: media.thumbUrl == null
                   ? const SizedBox.shrink()
                   : Image.network(
                       media.thumbUrl!,
                       fit: BoxFit.cover,
                       cacheWidth: 256,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_outlined, color: DjassaColors.muted),
+                      errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_outlined, color: HossoukoColors.muted),
                     ),
             ),
             if (media.isVideo) ...[
@@ -247,7 +247,7 @@ class _VideoScreenState extends State<_VideoScreen> {
                           child: VideoProgressIndicator(
                             _controller,
                             allowScrubbing: true,
-                            colors: const VideoProgressColors(playedColor: DjassaColors.orange, bufferedColor: Colors.white38),
+                            colors: const VideoProgressColors(playedColor: HossoukoColors.orange, bufferedColor: Colors.white38),
                           ),
                         ),
                       ]),

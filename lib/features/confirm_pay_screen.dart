@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/djassa_api.dart';
+import '../core/hossouko_api.dart';
 import '../core/model/payment.dart';
 import '../core/net/api_exception.dart';
 import '../core/providers.dart';
@@ -106,7 +106,7 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
       _error = null;
     });
     try {
-      final payment = await ref.read(djassaApiProvider).pay(
+      final payment = await ref.read(hossoukoApiProvider).pay(
             payCode: t.code,
             amount: t.fixedAmount ? null : _amountValue,
             wallet: _wallet,
@@ -194,9 +194,9 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(color: DjassaColors.pharmacyTint, borderRadius: BorderRadius.circular(DjassaRadius.sm)),
+                  decoration: BoxDecoration(color: HossoukoColors.pharmacyTint, borderRadius: BorderRadius.circular(HossoukoRadius.sm)),
                   child: const Row(children: [
-                    Icon(Icons.verified_rounded, size: 20, color: DjassaColors.success),
+                    Icon(Icons.verified_rounded, size: 20, color: HossoukoColors.success),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(Strings.verifiedMerchant,
@@ -219,8 +219,8 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
           if (t.fixedAmount)
             PatternedSurface(
               gradient:
-                  const LinearGradient(colors: [DjassaColors.ink, Color(0xFF0E1513)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(DjassaRadius.lg),
+                  const LinearGradient(colors: [HossoukoColors.ink, Color(0xFF0E1513)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(HossoukoRadius.lg),
               patternOpacity: 0.06,
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -297,19 +297,19 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
           if (points > 0)
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: DjassaColors.greenTint, borderRadius: BorderRadius.circular(DjassaRadius.md)),
+              decoration: BoxDecoration(color: HossoukoColors.greenTint, borderRadius: BorderRadius.circular(HossoukoRadius.md)),
               child: Row(children: [
-                const Icon(Icons.stars_rounded, color: DjassaColors.green),
+                const Icon(Icons.stars_rounded, color: HossoukoColors.green),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text('${Strings.youWillEarn} $points ${Strings.points}',
-                      style: const TextStyle(fontWeight: FontWeight.w800, color: DjassaColors.green, fontSize: 15)),
+                      style: const TextStyle(fontWeight: FontWeight.w800, color: HossoukoColors.green, fontSize: 15)),
                 ),
               ]),
             ),
           const SizedBox(height: 14),
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.shield_outlined, size: 18, color: DjassaColors.muted),
+            const Icon(Icons.shield_outlined, size: 18, color: HossoukoColors.muted),
             const SizedBox(width: 8),
             Expanded(child: Text(Strings.fundsNotice, style: text.bodySmall)),
           ]),
@@ -317,9 +317,9 @@ class _ConfirmPayScreenState extends ConsumerState<ConfirmPayScreen> {
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFFFDE4E4), borderRadius: BorderRadius.circular(DjassaRadius.md)),
+              decoration: BoxDecoration(color: const Color(0xFFFDE4E4), borderRadius: BorderRadius.circular(HossoukoRadius.md)),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.error_outline_rounded, color: DjassaColors.danger, size: 20),
+                const Icon(Icons.error_outline_rounded, color: HossoukoColors.danger, size: 20),
                 const SizedBox(width: 8),
                 Expanded(child: Text(_error!, style: const TextStyle(color: Color(0xFF8E1C1C), fontSize: 14.5))),
               ]),
@@ -341,21 +341,21 @@ class _WalletTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? DjassaColors.orangeTint : DjassaColors.surface,
+      color: selected ? HossoukoColors.orangeTint : HossoukoColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DjassaRadius.md),
-        side: BorderSide(color: selected ? DjassaColors.orangeDeep : DjassaColors.line, width: selected ? 2 : 1),
+        borderRadius: BorderRadius.circular(HossoukoRadius.md),
+        side: BorderSide(color: selected ? HossoukoColors.orangeDeep : HossoukoColors.line, width: selected ? 2 : 1),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(DjassaRadius.md),
+        borderRadius: BorderRadius.circular(HossoukoRadius.md),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(children: [
             WalletSwatch(wallet, size: 14),
             const SizedBox(width: 10),
             Expanded(child: Text(wallet.label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5), maxLines: 1)),
-            if (selected) const Icon(Icons.check_circle_rounded, color: DjassaColors.orangeDeep, size: 20),
+            if (selected) const Icon(Icons.check_circle_rounded, color: HossoukoColors.orangeDeep, size: 20),
           ]),
         ),
       ),

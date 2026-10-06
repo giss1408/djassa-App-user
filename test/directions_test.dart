@@ -1,4 +1,4 @@
-import 'package:djassa_user/core/model/venue.dart';
+import 'package:hossouko_user/core/model/venue.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The "Itinéraire" button opens a Google Maps directions link. With the

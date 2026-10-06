@@ -121,10 +121,10 @@ class PayTarget {
   bool get fixedAmount => amount != null;
 }
 
-/// Extracts the code from a scanned QR, or null if it is not a Djassa
+/// Extracts the code from a scanned QR, or null if it is not a Hossouko
 /// payment QR. Strict on purpose: anything else is refused before any
 /// network call.
 String? parsePayQr(String raw) {
-  final match = RegExp(r'^djassa://pay/([A-Z0-9]{6,16})$').firstMatch(raw.trim());
+  final match = RegExp(r'^hossouko://pay/([A-Z0-9]{6,16})$').firstMatch(raw.trim());
   return match?.group(1);
 }

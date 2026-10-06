@@ -29,7 +29,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
 
   Future<void> _loadConsent() async {
     try {
-      final active = await ref.read(djassaApiProvider).loyaltyConsent();
+      final active = await ref.read(hossoukoApiProvider).loyaltyConsent();
       if (mounted) setState(() => _consent = active);
     } on ApiException {
       // Leave the switch disabled; the rest of the screen still works.
@@ -54,7 +54,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     setState(() => _busy = true);
     String message;
     try {
-      final api = ref.read(djassaApiProvider);
+      final api = ref.read(hossoukoApiProvider);
       if (on) {
         await api.giveLoyaltyConsent();
         message = Strings.loyaltyGiven;
@@ -242,7 +242,7 @@ class _ChangeNumberScreenState extends ConsumerState<ChangeNumberScreen> {
   }
 }
 
-/// Old number gone: prove the new one, say who you are, wait for Djassa.
+/// Old number gone: prove the new one, say who you are, wait for Hossouko.
 class LostNumberScreen extends ConsumerStatefulWidget {
   const LostNumberScreen({super.key});
 

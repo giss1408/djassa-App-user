@@ -9,9 +9,9 @@
 # apps is the easiest mistake to make).
 set -euo pipefail
 
-ALIAS="djassa-user"
-KEY="${1:-${HOME}/djassa-user-release.jks}"
-SECRETS="${HOME}/djassa-user-github-secrets.txt"
+ALIAS="hossouko-user"
+KEY="${1:-${HOME}/hossouko-user-release.jks}"
+SECRETS="${HOME}/hossouko-user-github-secrets.txt"
 [ -f "$KEY" ] || { echo "error: $KEY not found." >&2; exit 1; }
 
 # Drop what pasting can add: bracketed-paste markers, control characters,
@@ -21,8 +21,8 @@ clean() { printf '%s' "$1" | sed $'s/\x1b\\[20[01]~//g' | LC_ALL=C tr -d '\000-\
 SOURCE=""
 if [ -f "$SECRETS" ]; then
   PASS="$(grep '^ANDROID_KEYSTORE_PASSWORD=' "$SECRETS" | cut -d= -f2-)"; SOURCE="$SECRETS"
-elif command -v pass >/dev/null 2>&1 && pass show "android/djassa-user-password" >/dev/null 2>&1; then
-  PASS="$(pass show "android/djassa-user-password" | head -1)"; SOURCE="pass android/djassa-user-password"
+elif command -v pass >/dev/null 2>&1 && pass show "android/hossouko-user-password" >/dev/null 2>&1; then
+  PASS="$(pass show "android/hossouko-user-password" | head -1)"; SOURCE="pass android/hossouko-user-password"
 else
   read -r -s -p "Password for $KEY: " RAW; echo
   PASS="$(clean "$RAW")"; SOURCE="typed"

@@ -27,7 +27,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final list = await ref.read(djassaApiProvider).payments();
+      final list = await ref.read(hossoukoApiProvider).payments();
       if (mounted) setState(() => _payments = list);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
@@ -74,10 +74,10 @@ class PaymentRow extends StatelessWidget {
     final p = payment;
     final wallet = Wallet.fromWire(p.walletProvider);
     final (icon, color, bg) = p.succeeded
-        ? (Icons.check_rounded, DjassaColors.success, DjassaColors.pharmacyTint)
+        ? (Icons.check_rounded, HossoukoColors.success, HossoukoColors.pharmacyTint)
         : p.failed
-            ? (Icons.close_rounded, DjassaColors.danger, const Color(0xFFFDE4E4))
-            : (Icons.schedule_rounded, DjassaColors.muted, DjassaColors.sand);
+            ? (Icons.close_rounded, HossoukoColors.danger, const Color(0xFFFDE4E4))
+            : (Icons.schedule_rounded, HossoukoColors.muted, HossoukoColors.sand);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(children: [
@@ -106,13 +106,13 @@ class PaymentRow extends StatelessWidget {
           Text(francs(p.amount),
               style: text.titleSmall?.copyWith(
                 decoration: p.failed ? TextDecoration.lineThrough : null,
-                color: p.failed ? DjassaColors.muted : DjassaColors.ink,
+                color: p.failed ? HossoukoColors.muted : HossoukoColors.ink,
               )),
           if (p.pointsAwarded > 0)
             Text('+${p.pointsAwarded} ${Strings.pts}',
-                style: text.bodySmall?.copyWith(color: DjassaColors.green, fontWeight: FontWeight.w700))
+                style: text.bodySmall?.copyWith(color: HossoukoColors.green, fontWeight: FontWeight.w700))
           else if (p.failed)
-            Text(Strings.paymentFailed, style: text.bodySmall?.copyWith(color: DjassaColors.danger)),
+            Text(Strings.paymentFailed, style: text.bodySmall?.copyWith(color: HossoukoColors.danger)),
         ]),
       ]),
     );

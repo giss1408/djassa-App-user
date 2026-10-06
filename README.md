@@ -1,8 +1,8 @@
-# Djassa — customer app
+# Hossouko — customer app
 
 Flutter app for customers in Abidjan: find a maquis or an on-duty pharmacy,
-see deals, pay a merchant's Djassa QR from a mobile wallet, and earn points.
-Talks to the FastAPI backend in [`../djassa-BE`](../djassa-BE). Android only.
+see deals, pay a merchant's Hossouko QR from a mobile wallet, and earn points.
+Talks to the FastAPI backend in [`../hossouko-BE`](../hossouko-BE). Android only.
 
 ## Run
 
@@ -27,4 +27,4 @@ Release builds are never debug-signed. Locally, `scripts/build-release.sh
 <https api>` builds the same three APKs (arm64, armv7, universal) if
 `android/key.properties` exists (see `key.properties.example`). Full procedure,
 including the free backend and Firebase App Distribution:
-[`../djassa-BE/docs/technical/DEPLOY-TEST.md`](../djassa-BE/docs/technical/DEPLOY-TEST.md).
+[`../hossouko-BE/docs/technical/DEPLOY-TEST.md`](../hossouko-BE/docs/technical/DEPLOY-TEST.md).

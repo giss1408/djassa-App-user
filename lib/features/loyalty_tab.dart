@@ -33,7 +33,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
     setState(() => _error = null);
     if (!ref.read(sessionProvider).signedIn) return;
     try {
-      final l = await ref.read(djassaApiProvider).loyalty();
+      final l = await ref.read(hossoukoApiProvider).loyalty();
       if (mounted) setState(() => _loyalty = l);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
@@ -43,7 +43,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
   Future<void> _redeem(Reward reward) async {
     setState(() => _redeeming = reward.id);
     try {
-      final voucher = await ref.read(djassaApiProvider).redeem(reward.id);
+      final voucher = await ref.read(hossoukoApiProvider).redeem(reward.id);
       if (!mounted) return;
       await showModalBottomSheet<void>(context: context, builder: (_) => _VoucherSheet(voucher: voucher));
     } on ApiException catch (e) {
@@ -68,7 +68,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
           GradientHeader(
             title: Strings.loyaltyTitle,
             subtitle: Strings.myPoints,
-            gradient: DjassaColors.loyaltyGradient,
+            gradient: HossoukoColors.loyaltyGradient,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -95,7 +95,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.info_outline_rounded, size: 17, color: DjassaColors.muted),
+                      const Icon(Icons.info_outline_rounded, size: 17, color: HossoukoColors.muted),
                       const SizedBox(width: 8),
                       Expanded(child: Text(Strings.noCashOut, style: text.bodySmall)),
                     ],
@@ -146,7 +146,7 @@ class _VenueLoyaltyCard extends StatelessWidget {
               children: [
                 _ProgressRing(
                   value: next == null ? 1 : balance.points / next.costPoints,
-                  child: Text('${balance.points}', style: serifStyle(26, color: DjassaColors.green, height: 1)),
+                  child: Text('${balance.points}', style: serifStyle(26, color: HossoukoColors.green, height: 1)),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -160,12 +160,12 @@ class _VenueLoyaltyCard extends StatelessWidget {
                           TextSpan(children: [
                             TextSpan(text: '${Strings.missing} ${next.costPoints - balance.points} ${Strings.pts} '),
                             TextSpan(
-                                text: '→ ${next.title}', style: const TextStyle(fontWeight: FontWeight.w700, color: DjassaColors.inkSoft)),
+                                text: '→ ${next.title}', style: const TextStyle(fontWeight: FontWeight.w700, color: HossoukoColors.inkSoft)),
                           ]),
                           style: text.bodySmall,
                         )
                       else
-                        Text(Strings.allUnlocked, style: text.bodySmall?.copyWith(color: DjassaColors.green, fontWeight: FontWeight.w700)),
+                        Text(Strings.allUnlocked, style: text.bodySmall?.copyWith(color: HossoukoColors.green, fontWeight: FontWeight.w700)),
                     ],
                   ),
                 ),
@@ -178,15 +178,15 @@ class _VenueLoyaltyCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 3),
                 padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
                 decoration: BoxDecoration(
-                  color: balance.points >= r.costPoints ? DjassaColors.greenTint : Colors.transparent,
-                  borderRadius: BorderRadius.circular(DjassaRadius.sm + 2),
+                  color: balance.points >= r.costPoints ? HossoukoColors.greenTint : Colors.transparent,
+                  borderRadius: BorderRadius.circular(HossoukoRadius.sm + 2),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       balance.points >= r.costPoints ? Icons.lock_open_rounded : Icons.lock_outline_rounded,
                       size: 18,
-                      color: balance.points >= r.costPoints ? DjassaColors.green : DjassaColors.muted,
+                      color: balance.points >= r.costPoints ? HossoukoColors.green : HossoukoColors.muted,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -201,7 +201,7 @@ class _VenueLoyaltyCard extends StatelessWidget {
                     if (balance.points >= r.costPoints)
                       FilledButton(
                         style: FilledButton.styleFrom(
-                          backgroundColor: DjassaColors.green,
+                          backgroundColor: HossoukoColors.green,
                           minimumSize: const Size(0, 40),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
@@ -240,8 +240,8 @@ class _ProgressRing extends StatelessWidget {
             value: value.clamp(0, 1).toDouble(),
             strokeWidth: 5,
             strokeCap: StrokeCap.round,
-            backgroundColor: DjassaColors.greenTint,
-            color: DjassaColors.green,
+            backgroundColor: HossoukoColors.greenTint,
+            color: HossoukoColors.green,
           ),
           Center(child: child),
         ],
@@ -266,9 +266,9 @@ class _HistoryRow extends StatelessWidget {
           Container(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(color: earned ? DjassaColors.greenTint : DjassaColors.orangeTint, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: earned ? HossoukoColors.greenTint : HossoukoColors.orangeTint, shape: BoxShape.circle),
             child: Icon(earned ? Icons.add_rounded : Icons.redeem_rounded,
-                size: 20, color: earned ? DjassaColors.green : DjassaColors.orangeDeep),
+                size: 20, color: earned ? HossoukoColors.green : HossoukoColors.orangeDeep),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -291,7 +291,7 @@ class _HistoryRow extends StatelessWidget {
             ),
           ),
           Text(earned ? '+${entry.points}' : '${entry.points}',
-              style: text.titleSmall?.copyWith(color: earned ? DjassaColors.green : DjassaColors.orangeDeep)),
+              style: text.titleSmall?.copyWith(color: earned ? HossoukoColors.green : HossoukoColors.orangeDeep)),
         ],
       ),
     );
@@ -312,14 +312,14 @@ class _VoucherSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.celebration_rounded, size: 44, color: DjassaColors.orangeDeep),
+            const Icon(Icons.celebration_rounded, size: 44, color: HossoukoColors.orangeDeep),
             const SizedBox(height: 10),
             Text(Strings.voucherTitle, style: text.headlineMedium),
             const SizedBox(height: 4),
             Text('${voucher.rewardTitle} · ${voucher.venueName}', style: text.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 20),
             DecoratedBox(
-              decoration: BoxDecoration(color: DjassaColors.paper, borderRadius: BorderRadius.circular(DjassaRadius.lg + 4)),
+              decoration: BoxDecoration(color: HossoukoColors.paper, borderRadius: BorderRadius.circular(HossoukoRadius.lg + 4)),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Ticket(
@@ -329,7 +329,7 @@ class _VoucherSheet extends StatelessWidget {
                       Text(Strings.voucherShow.toUpperCase(), style: text.labelSmall, textAlign: TextAlign.center),
                       const SizedBox(height: 8),
                       SelectableText(voucher.code,
-                          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: 10, color: DjassaColors.ink)),
+                          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: 10, color: HossoukoColors.ink)),
                     ]),
                   ),
                   bottom: Padding(
@@ -360,7 +360,7 @@ class _SignedOut extends ConsumerWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        const GradientHeader(title: Strings.loyaltyTitle, subtitle: Strings.myPoints, gradient: DjassaColors.loyaltyGradient),
+        const GradientHeader(title: Strings.loyaltyTitle, subtitle: Strings.myPoints, gradient: HossoukoColors.loyaltyGradient),
         Padding(
           padding: const EdgeInsets.all(24),
           child: Column(

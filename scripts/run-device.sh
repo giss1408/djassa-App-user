@@ -10,7 +10,7 @@
 #
 # The sign-in form is prefilled with 0700000001 (any number works: a customer account is created on first sign-in). Run the backend
 # with OTP_DEV_ECHO=1 and the SMS code is filled in too. Override with
-# DJASSA_DEV_PHONE.
+# HOSSOUKO_DEV_PHONE.
 set -euo pipefail
 
 PORT="${1:-8002}"
@@ -28,6 +28,6 @@ adb reverse "tcp:$PORT" "tcp:$PORT"
 # Cleartext to localhost is permitted in debug builds only, and only for
 # loopback (see android/app/src/debug/res/xml/network_security_config.xml).
 exec flutter run \
-  --dart-define=DJASSA_API_BASE="http://localhost:$PORT" \
-  --dart-define=DJASSA_DEV_PHONE="${DJASSA_DEV_PHONE:-0700000001}" \
+  --dart-define=HOSSOUKO_API_BASE="http://localhost:$PORT" \
+  --dart-define=HOSSOUKO_DEV_PHONE="${HOSSOUKO_DEV_PHONE:-0700000001}" \
   "$@"

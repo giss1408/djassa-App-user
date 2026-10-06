@@ -1,4 +1,4 @@
-import 'package:djassa_user/core/model/deal.dart';
+import 'package:hossouko_user/core/model/deal.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, Object?> _deal([String? ribbon]) => {
