@@ -9,6 +9,25 @@ class Strings {
   static const signInPhoneLabel = 'Numéro de téléphone';
   static const signInPhoneHint = '07 12 34 56 78';
   static const signInPhoneHelper = 'Vous recevrez un code par SMS.';
+  // Loyalty consent (Law 2013-450, art. 14). Never pre-ticked.
+  static const loyaltyConsent =
+      "J'accepte que Djassa garde mon numéro pour relier mes achats chez les commerçants partenaires (y compris mes paiements Wave) et me donner des points. Je peux retirer mon accord à tout moment dans Mon compte.";
+  static const loyaltyConsentTitle = 'Points de fidélité';
+  static const loyaltyConsentOn = 'Mes achats sont reliés à mon numéro.';
+  static const loyaltyConsentOff = 'Vos achats ne vous rapportent pas de points.';
+  static const loyaltyWithdrawConfirm = 'Retirer votre accord ?';
+  static const loyaltyWithdrawHint =
+      'Tous vos points seront effacés et vos achats ne seront plus reliés à votre numéro. Cette action est définitive.';
+  static const loyaltyWithdraw = 'Retirer et effacer';
+  static String loyaltyErased(int points) => 'Accord retiré. $points points effacés.';
+  static const loyaltyGiven = 'Merci ! Vos prochains achats vous rapportent des points.';
+  // Suggestions to the Djassa team (unlocked at 100 points).
+  static const suggestions = 'Suggérer une idée';
+  static const suggestionsFailed = "WhatsApp n'a pas pu s'ouvrir.";
+  // Corner banner on a deal's image.
+  static const ribbonBonPlan = 'BON PLAN';
+  static const ribbonFlash = 'FLASH';
+  static const ribbonPromo = 'PROMO';
   static const signInSendCode = 'Recevoir le code';
   static const signInCodeSentTo = 'Code envoyé par SMS au';
   static const signInCodeLabel = 'Code à 6 chiffres';

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/auth/auth_repository.dart';
 import '../core/config/env.dart';
+import '../core/djassa_api.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
 import 'account_screen.dart';
@@ -28,6 +29,8 @@ class _PhoneSignInFormState extends ConsumerState<PhoneSignInForm> {
   final _code = TextEditingController();
   bool _codeStep = false;
   bool _busy = false;
+  // Loyalty consent. Never pre-ticked: agreeing has to be the customer's act.
+  bool _consent = false;
   String? _error;
   String? _sentTo;
   int _resendLeft = 0;
@@ -82,7 +85,9 @@ class _PhoneSignInFormState extends ConsumerState<PhoneSignInForm> {
       _busy = true;
       _error = null;
     });
-    final result = await ref.read(sessionProvider.notifier).verifyCode(phone: _phone.text.trim(), code: _code.text);
+    final result = await ref
+        .read(sessionProvider.notifier)
+        .verifyCode(phone: _phone.text.trim(), code: _code.text, loyaltyConsentVersion: _consent ? loyaltyConsentVersion : null);
     if (!mounted) return;
     setState(() {
       _busy = false;
@@ -147,6 +152,17 @@ class _PhoneSignInFormState extends ConsumerState<PhoneSignInForm> {
             onSubmitted: (_) => _verify(),
             style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.w700),
             decoration: const InputDecoration(labelText: Strings.signInCodeLabel, prefixIcon: Icon(Icons.sms_outlined)),
+          ),
+        ],
+        if (!_codeStep) ...[
+          const SizedBox(height: 12),
+          CheckboxListTile(
+            value: _consent,
+            onChanged: _busy ? null : (v) => setState(() => _consent = v ?? false),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text(Strings.loyaltyConsent, style: text.bodySmall),
           ),
         ],
         if (_error != null) ...[

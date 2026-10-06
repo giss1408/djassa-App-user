@@ -311,6 +311,8 @@ class _AccountMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Hidden until the customer reaches 100 points (the server decides).
+    final suggestions = ref.watch(suggestionsLinkProvider).valueOrNull;
     return PopupMenuButton<String>(
       tooltip: 'Menu',
       offset: const Offset(0, 52),
@@ -320,20 +322,31 @@ class _AccountMenu extends ConsumerWidget {
           Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'account'), builder: (_) => const AccountScreen()));
         } else if (v == 'about') {
           Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'about_name'), builder: (_) => const AboutNameScreen()));
+        } else if (v == 'suggest' && suggestions != null) {
+          launchUrl(Uri.parse(suggestions), mode: LaunchMode.externalApplication).then((ok) {
+            if (!ok && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(Strings.suggestionsFailed)));
+            }
+          });
         } else if (v == 'logout') {
           ref.read(sessionProvider.notifier).signOut();
         }
       },
-      itemBuilder: (_) => const [
-        PopupMenuItem(
+      itemBuilder: (_) => [
+        const PopupMenuItem(
           value: 'account',
           child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.manage_accounts_outlined), title: Text(Strings.account)),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'about',
           child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_stories_outlined), title: Text(Strings.aboutNameLink)),
         ),
-        PopupMenuItem(
+        if (suggestions != null)
+          const PopupMenuItem(
+            value: 'suggest',
+            child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lightbulb_outline_rounded), title: Text(Strings.suggestions)),
+          ),
+        const PopupMenuItem(
           value: 'logout',
           child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.logout_rounded), title: Text(Strings.signOut)),
         ),

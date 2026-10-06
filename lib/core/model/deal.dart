@@ -49,6 +49,7 @@ class Deal {
     this.discountPercent,
     this.price,
     this.originalPrice,
+    this.ribbon = DealRibbon.bonPlan,
   });
 
   factory Deal.fromJson(Map<String, Object?> json) => Deal(
@@ -62,6 +63,7 @@ class Deal {
         discountPercent: json['discount_percent'] as int?,
         price: json['price'] as int?,
         originalPrice: json['original_price'] as int?,
+        ribbon: DealRibbon.fromWire(json['ribbon'] as String?),
         endsAt: parseServerTime(json['ends_at']) ?? DateTime.now(),
         isFeatured: json['is_featured'] as bool? ?? false,
         isSample: json['is_sample'] as bool? ?? false,
@@ -81,6 +83,9 @@ class Deal {
   final int? originalPrice;
   final DateTime endsAt;
 
+  /// The corner banner on the deal's image, chosen by the merchant.
+  final DealRibbon ribbon;
+
   /// Paid placement. Always labelled "Sponsorisé" in the app.
   final bool isFeatured;
   final bool isSample;
@@ -93,4 +98,18 @@ class Deal {
     if (p == null || o == null || o <= 0 || p >= o) return null;
     return ((o - p) * 100 / o).round();
   }
+}
+
+/// The corner banner a deal wears: a "bon plan", a flash sale, or the promo
+/// sticker. Unknown values (a newer server) fall back to the bon plan.
+enum DealRibbon {
+  bonPlan('bon_plan'),
+  flash('flash'),
+  promo('promo');
+
+  const DealRibbon(this.wire);
+
+  final String wire;
+
+  static DealRibbon fromWire(String? value) => DealRibbon.values.firstWhere((r) => r.wire == value, orElse: () => DealRibbon.bonPlan);
 }

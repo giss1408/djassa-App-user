@@ -68,6 +68,14 @@ void main() {
     expect(await store.readRefreshToken(), 'refresh-1');
   });
 
+  test('the loyalty consent ticked on the sign-in screen travels with the code, and only then', () async {
+    respond = (r) => json(pair('access-1', 'refresh-1'));
+    await auth.verifyCode(phone: '0700000002', code: '123456', loyaltyConsentVersion: 'fidelite-2026-10');
+    expect(jsonDecode(sent.last.body)['loyalty_consent_version'], 'fidelite-2026-10');
+    await auth.verifyCode(phone: '0700000002', code: '123456');
+    expect((jsonDecode(sent.last.body) as Map).containsKey('loyalty_consent_version'), isFalse);
+  });
+
   test('a wrong code shows the server\'s words and does not end anything', () async {
     respond = (_) => json({'detail': 'Code incorrect ou expire. Demandez un nouveau code.'}, 401);
     final result = await auth.verifyCode(phone: '0700000002', code: '000000');

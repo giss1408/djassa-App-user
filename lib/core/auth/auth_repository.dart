@@ -148,11 +148,16 @@ class AuthRepository {
   }
 
   /// Exchanges the SMS code for a session.
-  Future<SignInResult> verifyCode({required String phone, required String code}) async {
+  Future<SignInResult> verifyCode({required String phone, required String code, String? loyaltyConsentVersion}) async {
     try {
       final body = await _client.postJson(
         '/api/auth/otp/verify',
-        body: {'phone': phone, 'code': code, 'app': appRole},
+        body: {
+          'phone': phone,
+          'code': code,
+          'app': appRole,
+          if (loyaltyConsentVersion != null) 'loyalty_consent_version': loyaltyConsentVersion,
+        },
         authenticated: false,
       );
       return await _store(body) ? SignInSuccess(await currentUsername() ?? '') : const SignInUnavailable('La réponse du serveur est inutilisable');

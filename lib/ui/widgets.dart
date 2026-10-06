@@ -893,6 +893,35 @@ String dealHeadline(Deal d) {
   return Strings.dealBadge;
 }
 
+/// The diagonal corner banner on a deal's image: green "BON PLAN", red
+/// "FLASH", or the yellow "PROMO" sticker. Clipped by the parent's corners.
+class DealRibbonBanner extends StatelessWidget {
+  const DealRibbonBanner({super.key, required this.ribbon, required this.child, this.radius = DjassaRadius.md});
+
+  final DealRibbon ribbon;
+  final Widget child;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color, ink) = switch (ribbon) {
+      DealRibbon.bonPlan => (Strings.ribbonBonPlan, DjassaColors.green, Colors.white),
+      DealRibbon.flash => (Strings.ribbonFlash, DjassaColors.danger, Colors.white),
+      DealRibbon.promo => (Strings.ribbonPromo, const Color(0xFFFFC83D), DjassaColors.ink),
+    };
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Banner(
+        message: label,
+        location: BannerLocation.topStart,
+        color: color,
+        textStyle: TextStyle(color: ink, fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: 0.6, height: 1),
+        child: child,
+      ),
+    );
+  }
+}
+
 /// A deal, as a card. [hero] is the large sponsored format for carousels;
 /// the default is the compact row used in lists.
 ///
@@ -917,58 +946,66 @@ class DealCard extends StatelessWidget {
       label: '${deal.isFeatured ? '${Strings.sponsored}. ' : ''}${deal.title}, ${deal.venueName}',
       child: GestureDetector(
         onTap: onTap,
-        child: PatternedSurface(
-          gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-          borderRadius: BorderRadius.circular(DjassaRadius.lg),
-          patternOpacity: 0.12,
-          child: DecoratedBox(
-            // Darkens the lower half so white text stays readable on the
-            // lightest gradients.
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0x00000000), Color(0x73000000)],
-                stops: [0.35, 1],
+        child: DealRibbonBanner(
+          ribbon: deal.ribbon,
+          radius: DjassaRadius.lg,
+          child: PatternedSurface(
+            gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
+            borderRadius: BorderRadius.circular(DjassaRadius.lg),
+            patternOpacity: 0.12,
+            child: DecoratedBox(
+              // Darkens the lower half so white text stays readable on the
+              // lightest gradients.
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x00000000), Color(0x73000000)],
+                  stops: [0.35, 1],
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Wrap(spacing: 6, runSpacing: 6, children: [
-                          if (deal.isFeatured) const _SponsoredPill(onDark: true),
-                          if (deal.isSample) const Tag.sample(),
-                        ]),
-                      ),
-                      Text(dealHeadline(deal), style: serifStyle(40, color: Colors.white, height: 0.9)),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(deal.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800, height: 1.2),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 6),
-                  Row(children: [
-                    Icon(CategoryStyle.of(deal.venueCategory).icon, size: 15, color: Colors.white.withOpacity(0.9)),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text('${deal.venueName} · ${deal.venueCommune}',
-                          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          // Clears the corner banner.
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 30, top: 4),
+                            child: Wrap(spacing: 6, runSpacing: 6, children: [
+                              if (deal.isFeatured) const _SponsoredPill(onDark: true),
+                              if (deal.isSample) const Tag.sample(),
+                            ]),
+                          ),
+                        ),
+                        Text(dealHeadline(deal), style: serifStyle(40, color: Colors.white, height: 0.9)),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(Strings.dealEnds(deal.endsAt),
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
-                  ]),
-                ],
+                    const Spacer(),
+                    Text(deal.title,
+                        style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800, height: 1.2),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 6),
+                    Row(children: [
+                      Icon(CategoryStyle.of(deal.venueCategory).icon, size: 15, color: Colors.white.withOpacity(0.9)),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text('${deal.venueName} · ${deal.venueCommune}',
+                            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(Strings.dealEnds(deal.endsAt),
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+                    ]),
+                  ],
+                ),
               ),
             ),
           ),
@@ -992,15 +1029,19 @@ class DealCard extends StatelessWidget {
             SizedBox(
               width: 76,
               height: 76,
-              child: PatternedSurface(
-                gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
-                borderRadius: BorderRadius.circular(DjassaRadius.md),
-                patternOpacity: 0.14,
-                child: Center(
-                  child: FittedBox(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(dealHeadline(deal), style: serifStyle(30, color: Colors.white, height: 1)),
+              child: DealRibbonBanner(
+                ribbon: deal.ribbon,
+                child: PatternedSurface(
+                  gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  borderRadius: BorderRadius.circular(DjassaRadius.md),
+                  patternOpacity: 0.14,
+                  child: Center(
+                    child: FittedBox(
+                      child: Padding(
+                        // Lower than centre: the banner takes the top corner.
+                        padding: const EdgeInsets.fromLTRB(8, 18, 8, 6),
+                        child: Text(dealHeadline(deal), style: serifStyle(30, color: Colors.white, height: 1)),
+                      ),
                     ),
                   ),
                 ),

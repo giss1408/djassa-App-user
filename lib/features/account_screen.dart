@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/auth/auth_repository.dart';
 import '../core/config/env.dart';
+import '../core/net/api_exception.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
 
@@ -17,6 +18,58 @@ class AccountScreen extends ConsumerStatefulWidget {
 
 class _AccountScreenState extends ConsumerState<AccountScreen> {
   bool _busy = false;
+  // Null until the server answers.
+  bool? _consent;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConsent();
+  }
+
+  Future<void> _loadConsent() async {
+    try {
+      final active = await ref.read(djassaApiProvider).loyaltyConsent();
+      if (mounted) setState(() => _consent = active);
+    } on ApiException {
+      // Leave the switch disabled; the rest of the screen still works.
+    }
+  }
+
+  Future<void> _setConsent(bool on) async {
+    if (!on) {
+      final sure = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text(Strings.loyaltyWithdrawConfirm),
+          content: const Text(Strings.loyaltyWithdrawHint),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
+            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text(Strings.loyaltyWithdraw)),
+          ],
+        ),
+      );
+      if (sure != true || !mounted) return;
+    }
+    setState(() => _busy = true);
+    String message;
+    try {
+      final api = ref.read(djassaApiProvider);
+      if (on) {
+        await api.giveLoyaltyConsent();
+        message = Strings.loyaltyGiven;
+      } else {
+        message = Strings.loyaltyErased(await api.withdrawLoyaltyConsent());
+      }
+      _consent = on;
+      ref.invalidate(suggestionsLinkProvider);
+    } on ApiException catch (error) {
+      message = error.message;
+    }
+    if (!mounted) return;
+    setState(() => _busy = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   Future<void> _signOutOthers() async {
     final sure = await showDialog<bool>(
@@ -56,6 +109,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             leading: const Icon(Icons.phone_iphone_rounded),
             title: const Text(Strings.accountNumber),
             subtitle: Text(username),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.loyalty_outlined),
+            title: const Text(Strings.loyaltyConsentTitle),
+            subtitle: Text(_consent == true ? Strings.loyaltyConsentOn : Strings.loyaltyConsentOff),
+            value: _consent ?? false,
+            onChanged: (_busy || _consent == null) ? null : _setConsent,
           ),
           const Divider(),
           ListTile(

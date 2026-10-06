@@ -47,6 +47,16 @@ final Provider<AuthRepository> authRepositoryProvider = Provider<AuthRepository>
 
 final djassaApiProvider = Provider<DjassaApi>((ref) => DjassaApi(ref.watch(apiClientProvider)));
 
+/// The suggestions WhatsApp link, null while hidden. Never an error: a
+/// failure just keeps the menu entry out of sight.
+final suggestionsLinkProvider = FutureProvider.autoDispose<String?>((ref) async {
+  try {
+    return await ref.watch(djassaApiProvider).suggestionsWhatsapp();
+  } catch (_) {
+    return null;
+  }
+});
+
 /// Whether the customer is signed in.
 class SessionState {
   const SessionState({required this.signedIn, this.username, this.checked = false});
@@ -76,8 +86,9 @@ class SessionNotifier extends Notifier<SessionState> {
     );
   }
 
-  Future<SignInResult> verifyCode({required String phone, required String code}) async {
-    final result = await ref.read(authRepositoryProvider).verifyCode(phone: phone, code: code);
+  Future<SignInResult> verifyCode({required String phone, required String code, String? loyaltyConsentVersion}) async {
+    final result =
+        await ref.read(authRepositoryProvider).verifyCode(phone: phone, code: code, loyaltyConsentVersion: loyaltyConsentVersion);
     if (result is SignInSuccess) {
       state = SessionState(signedIn: true, username: result.username, checked: true);
     }

@@ -140,6 +140,11 @@ class ApiClient {
     return _asObject(decoded);
   }
 
+  Future<Map<String, Object?>> putJson(String path, {Object? body}) async =>
+      _asObject(await _send('PUT', path, jsonBody: body, authenticated: true));
+
+  Future<Map<String, Object?>> deleteJson(String path) async => _asObject(await _send('DELETE', path, authenticated: true));
+
   Map<String, Object?> _asObject(Object? body) {
     if (body is! Map<String, Object?>) {
       throw const MalformedResponseException('Expected a JSON object');
