@@ -55,6 +55,22 @@ class Venue {
         ],
       );
 
+  /// What favourites and "vus récemment" keep on the phone: enough to draw
+  /// a card offline, in the server's own shape so [Venue.fromJson] reads it
+  /// back. No points, no media, nothing about the customer.
+  Map<String, Object?> toSnapshotJson() => {
+        'id': id,
+        'category': category,
+        'name': name,
+        'commune': commune,
+        if (address != null) 'address': address,
+        if (specialties != null) 'specialties': specialties,
+        'points_per_100': pointsPer100,
+        'accepts_payment': acceptsPayment,
+        'is_sample': isSample,
+        if (coverUrl != null) 'cover_url': coverUrl,
+      };
+
   final int id;
   final String category; // a key from /api/categories
   final String name;

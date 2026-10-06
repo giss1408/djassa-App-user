@@ -443,12 +443,16 @@ class VenueThumb extends StatelessWidget {
 /// apps lead with the place. Used where browsing is the point (maquis); the
 /// compact row stays for lists people scan in a hurry (pharmacies).
 class VenueCard extends StatelessWidget {
-  const VenueCard({super.key, required this.venue, required this.onTap, this.footer, this.cover = false});
+  const VenueCard({super.key, required this.venue, required this.onTap, this.footer, this.cover = false, this.action});
 
   final Venue venue;
   final VoidCallback onTap;
   final Widget? footer;
   final bool cover;
+
+  /// A button on the card, e.g. the favourite star: over the photo's top-left
+  /// corner with [cover], at the end of the name row otherwise.
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -488,6 +492,7 @@ class VenueCard extends StatelessWidget {
                 children: [
                   VenueBanner(venue: venue, height: 128),
                   if (venue.isSample) const Positioned(top: 12, right: 12, child: Tag.sample()),
+                  if (action != null) Positioned(top: 2, left: 2, child: action!),
                 ],
               ),
               Padding(
@@ -545,6 +550,7 @@ class VenueCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (action != null) action!,
               ],
             ),
             if (tags.isNotEmpty) ...[

@@ -9,6 +9,8 @@ import '../l10n/strings.dart';
 import '../ui/directions.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import '../core/personal_lists.dart';
+import 'favorite_star.dart';
 import 'scan_screen.dart';
 import 'sign_in_gate.dart';
 import 'venue_media_strip.dart';
@@ -38,6 +40,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
     try {
       final v = await ref.read(djassaApiProvider).venue(widget.venueId);
       if (mounted) setState(() => _venue = v);
+      ref.read(personalListsProvider.notifier).viewed(v);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
     }
@@ -68,6 +71,7 @@ class _VenueScreenState extends ConsumerState<VenueScreen> {
             child: const BackButton(color: Colors.white),
           ),
         ),
+        actions: [if (v != null) FavoriteStar(venue: v, onDark: true)],
       ),
       bottomNavigationBar: v == null || !v.acceptsPayment
           ? null

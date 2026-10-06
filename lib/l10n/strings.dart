@@ -21,6 +21,14 @@ class Strings {
   static const loyaltyWithdraw = 'Retirer et effacer';
   static String loyaltyErased(int points) => 'Accord retiré. $points points effacés.';
   static const loyaltyGiven = 'Merci ! Vos prochains achats vous rapportent des points.';
+  // Favourites and history, kept on the phone only.
+  static const favorites = 'Mes favoris';
+  static const addFavorite = 'Ajouter aux favoris';
+  static const removeFavorite = 'Retirer des favoris';
+  static const recentlyViewed = 'Vus récemment';
+  static const recentSearches = 'Recherches récentes';
+  static const clearHistory = 'Effacer';
+  static const forgetSearch = 'Retirer cette recherche';
   // Browsing signed out: sign-in is asked only when it is needed.
   static const signInAction = 'Se connecter';
   static const signInToPay = 'Connectez-vous pour payer et gagner des points.';

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../core/model/payment.dart';
 import '../core/model/venue.dart';
+import '../core/personal_lists.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
@@ -78,6 +79,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final session = ref.watch(sessionProvider);
+    final lists = ref.watch(personalListsProvider);
     final username = session.signedIn ? session.username : null;
     final name = username == null || username.isEmpty ? null : '${username[0].toUpperCase()}${username.substring(1)}';
 
@@ -261,6 +263,24 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         ),
                       ),
           ),
+          // Kept on the phone: there signed in or not, and offline too.
+          if (lists.favorites.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            const Padding(padding: EdgeInsets.only(left: 20, right: 10), child: SectionHeader(Strings.favorites)),
+            _VenueRow(venues: lists.favorites, onTap: _openVenue),
+          ],
+          if (lists.recentVenues.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 10),
+              child: SectionHeader(
+                Strings.recentlyViewed,
+                actionLabel: Strings.clearHistory,
+                onAction: ref.read(personalListsProvider.notifier).clearRecentVenues,
+              ),
+            ),
+            _VenueRow(venues: lists.recentVenues, onTap: _openVenue),
+          ],
           const SizedBox(height: 28),
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 10),
@@ -539,6 +559,28 @@ class _PharmacyMini extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Favourites or recently viewed shops, as the same small cards as "À découvrir".
+class _VenueRow extends StatelessWidget {
+  const _VenueRow({required this.venues, required this.onTap});
+
+  final List<Venue> venues;
+  final ValueChanged<Venue> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 212,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount: venues.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (_, i) => _MaquisMini(venue: venues[i], onTap: () => onTap(venues[i])),
       ),
     );
   }

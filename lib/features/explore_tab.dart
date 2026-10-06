@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/model/deal.dart';
 import '../core/model/venue.dart';
+import '../core/personal_lists.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'favorite_star.dart';
 import 'pharmacies_tab.dart';
 import 'venue_screen.dart';
 
@@ -66,6 +68,14 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
     }
   }
 
+  /// Runs a recent search again.
+  void _repeat(String query) {
+    _query.text = query;
+    _debounce?.cancel();
+    setState(() {});
+    _load();
+  }
+
   // One request after typing stops, not one per keystroke: each costs data.
   void _onQueryChanged(String _) {
     _debounce?.cancel();
@@ -90,7 +100,10 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
                 controller: _query,
                 onChanged: _onQueryChanged,
                 textInputAction: TextInputAction.search,
-                onSubmitted: (_) => _load(),
+                onSubmitted: (q) {
+                  ref.read(personalListsProvider.notifier).searched(q);
+                  _load();
+                },
                 decoration: InputDecoration(
                   hintText: Strings.searchAllHint,
                   prefixIcon: const Icon(Icons.search_rounded),
@@ -126,6 +139,7 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
               _load();
             },
           ),
+          if (_query.text.isEmpty) _RecentSearches(onPick: _repeat),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
             child: Column(
@@ -146,7 +160,12 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
                     VenueCard(
                       venue: v,
                       cover: true,
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: v.id))),
+                      action: FavoriteStar(venue: v, onDark: true),
+                      onTap: () {
+                        // Opening a result is what makes a typed search worth remembering.
+                        ref.read(personalListsProvider.notifier).searched(_query.text);
+                        Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: v.id)));
+                      },
                     ),
                 ],
               ],
@@ -180,6 +199,45 @@ class _OnDutyBanner extends StatelessWidget {
         ),
         Icon(Icons.chevron_right_rounded, color: DjassaColors.pharmacy),
       ]),
+    );
+  }
+}
+
+
+/// The last searches, as chips: tap to search again, the cross to forget
+/// one, "Effacer" to forget them all. Shown while the search box is empty.
+class _RecentSearches extends ConsumerWidget {
+  const _RecentSearches({required this.onPick});
+
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searches = ref.watch(personalListsProvider.select((s) => s.recentSearches));
+    if (searches.isEmpty) return const SizedBox.shrink();
+    final lists = ref.read(personalListsProvider.notifier);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 14, 10, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(Strings.recentSearches, actionLabel: Strings.clearHistory, onAction: lists.clearSearches),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final q in searches)
+                InputChip(
+                  avatar: const Icon(Icons.history_rounded, size: 18),
+                  label: Text(q),
+                  onPressed: () => onPick(q),
+                  onDeleted: () => lists.forgetSearch(q),
+                  deleteButtonTooltipMessage: Strings.forgetSearch,
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
