@@ -36,7 +36,7 @@ android {
         applicationId = "ci.fidelia.fidelia_user"
         // 23: CameraX 1.5 (mobile_scanner) requires Android 6+.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 

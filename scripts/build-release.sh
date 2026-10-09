@@ -48,9 +48,18 @@ flutter build apk --release \
   --dart-define=FIDELIA_APP_VERSION="$APP_VERSION" \
   "$@"
 
+# The same build as an app bundle, the format Google Play takes. Its own
+# symbol map: an obfuscated build is only readable with the map it produced.
+flutter build appbundle --release \
+  --obfuscate --split-debug-info="build/symbols/$APP_VERSION/play" \
+  --dart-define=FIDELIA_API_BASE="$API_BASE" \
+  --dart-define=FIDELIA_APP_VERSION="$APP_VERSION" \
+  "$@"
+
 echo
 echo "Artifacts:"
 ls -la build/app/outputs/flutter-apk/*release*.apk
+ls -la build/app/outputs/bundle/release/app-release.aab
 echo
 echo "Symbol maps (archive these, do not ship them): build/symbols/$APP_VERSION/"
 echo "Read a reported stack with: flutter symbolize -i stack.txt -d build/symbols/$APP_VERSION/app.android-arm.symbols"
