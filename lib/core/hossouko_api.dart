@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'model/deal.dart';
+import 'model/layaway.dart';
 import 'model/loyalty.dart';
 import 'model/payment.dart';
 import 'model/venue.dart';
@@ -103,6 +104,12 @@ class HossoukoApi {
   Future<String?> suggestionsWhatsapp() async {
     final json = await _client.getJson('/api/support/suggestions/whatsapp');
     return json['available'] == true ? json['whatsapp_url'] as String? : null;
+  }
+
+  /// Goods being paid in several installments, at any shop.
+  Future<List<LayawayPlan>> layaway() async {
+    final list = await _client.getJsonList('/api/customer/layaway');
+    return [for (final p in list) LayawayPlan.fromJson(p! as Map<String, Object?>)];
   }
 }
 

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/model/layaway.dart';
 import '../core/model/loyalty.dart';
+import '../core/model/money.dart';
 import '../core/model/venue.dart';
 import '../core/net/api_exception.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
+import '../ui/money_text.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'sign_in_gate.dart';
@@ -20,6 +23,7 @@ class LoyaltyTab extends ConsumerStatefulWidget {
 
 class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
   Loyalty? _loyalty;
+  List<LayawayPlan> _plans = const [];
   Object? _error;
   int? _redeeming;
 
@@ -37,6 +41,13 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
       if (mounted) setState(() => _loyalty = l);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
+    }
+    try {
+      final plans = await ref.read(hossoukoApiProvider).layaway();
+      if (mounted) setState(() => _plans = plans);
+    } on Exception {
+      // Most customers have none, and an older server has no such route:
+      // the points above stay useful either way.
     }
   }
 
@@ -101,6 +112,13 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
                     ],
                   ),
                   const SizedBox(height: 16),
+                  if (_plans.isNotEmpty) ...[
+                    const SectionHeader(Strings.layawayTitle),
+                    Text(Strings.layawayMoneyNote, style: text.bodySmall),
+                    const SizedBox(height: 10),
+                    for (final p in _plans) LayawayCard(plan: p),
+                    const SizedBox(height: 12),
+                  ],
                   if (l.venues.isEmpty)
                     const EmptyState(icon: Icons.stars_rounded, title: Strings.noPointsYet, message: Strings.noPointsHint),
                   for (final b in l.venues) _VenueLoyaltyCard(balance: b, redeeming: _redeeming, onRedeem: _redeem),
@@ -376,6 +394,53 @@ class _SignedOut extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// One good being paid in installments: how far along, and what happens next.
+class LayawayCard extends StatelessWidget {
+  const LayawayCard({super.key, required this.plan});
+
+  final LayawayPlan plan;
+
+  static String _f(int amount) => formatMoney(Money.fromMajor(amount, 'XOF'));
+
+  String get _status => switch (plan.status) {
+        'completed' => Strings.layawayReady,
+        'delivered' => Strings.layawayDelivered,
+        'cancelled' => plan.refundedAmount == null
+            ? Strings.layawayCancelled
+            : '${Strings.layawayCancelled} · ${_f(plan.refundedAmount!)} ${Strings.layawayRefunded}',
+        _ => '${Strings.layawayRemaining} ${_f(plan.remaining)} ${Strings.layawayBefore} ${Strings.shortDay(plan.dueBy)}',
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SoftCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(plan.item, style: text.titleMedium),
+            Text(plan.venueName, style: text.bodySmall),
+            const SizedBox(height: 10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(value: plan.progress, minHeight: 8, color: HossoukoColors.green),
+            ),
+            const SizedBox(height: 8),
+            Text('${_f(plan.paid)} ${Strings.layawayPaid} ${_f(plan.price)} · ${plan.installments.length} ${Strings.layawayPayments}',
+                style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+            Text(_status,
+                style: text.bodySmall?.copyWith(
+                    color: plan.status == 'completed' ? HossoukoColors.green : null,
+                    fontWeight: plan.status == 'completed' ? FontWeight.w700 : null)),
+          ],
+        ),
+      ),
     );
   }
 }
