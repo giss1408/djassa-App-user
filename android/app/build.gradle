@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "ci.fidelia.fidelia_user"
+    namespace = "com.regisse.fidelia"
     // mobile_scanner 6 (CameraX 1.5) compiles against API 36; Flutter 3.24's
     // default is 34. compileSdk only unlocks APIs, it does not change runtime
     // behaviour (that is targetSdk).
@@ -33,7 +33,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "ci.fidelia.fidelia_user"
+        applicationId = "com.regisse.fidelia"
         // 23: CameraX 1.5 (mobile_scanner) requires Android 6+.
         minSdk = 23
         targetSdk = 36
