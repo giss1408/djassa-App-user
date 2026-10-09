@@ -117,7 +117,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                           ],
                         ),
                       ),
-                      _AccountMenu(initial: name?[0] ?? 'D'),
+                      _AccountMenu(initial: name?[0] ?? 'F'),
                     ],
                   ),
                 ),
