@@ -97,6 +97,39 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  Future<void> _deleteAccount() async {
+    final sure = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(Strings.deleteAccountConfirm),
+        content: const Text(Strings.deleteAccountWarning),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text(Strings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            child: const Text(Strings.deleteAccountAction),
+          ),
+        ],
+      ),
+    );
+    if (sure != true || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      await ref.read(fideliaApiProvider).deleteAccount();
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      return;
+    }
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    await ref.read(sessionProvider.notifier).signOut();
+    messenger.showSnackBar(const SnackBar(content: Text(Strings.accountDeleted)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final username = ref.watch(sessionProvider).username ?? '';
@@ -131,6 +164,14 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             subtitle: const Text(Strings.signOutOthersHint),
             enabled: !_busy,
             onTap: _signOutOthers,
+          ),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),
+            title: Text(Strings.deleteAccount, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            subtitle: const Text(Strings.deleteAccountHint),
+            enabled: !_busy,
+            onTap: _deleteAccount,
           ),
         ],
       ),

@@ -97,6 +97,10 @@ class FideliaApi {
   Future<void> giveLoyaltyConsent() => _client.putJson('/api/customer/loyalty-consent', body: {'consent_version': loyaltyConsentVersion});
 
   /// Withdraws consent: the server erases every point. Returns how many.
+  /// Deletes this account for good (fidelia-BE app/services/account_delete.py):
+  /// points and number erased, the shops' sales kept without the name.
+  Future<void> deleteAccount() async => _client.deleteJson('/api/account');
+
   Future<int> withdrawLoyaltyConsent() async => ((await _client.deleteJson('/api/customer/loyalty-consent'))['points_erased'] as int?) ?? 0;
 
   /// The WhatsApp link to the Fidelia team, or null while it is locked
