@@ -1,4 +1,4 @@
-package ci.hossouko.hossouko_user
+package ci.fidelia.fidelia_user
 
 import io.flutter.embedding.android.FlutterActivity
 

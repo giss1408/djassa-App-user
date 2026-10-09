@@ -1,4 +1,4 @@
-import 'package:hossouko_user/core/model/venue.dart';
+import 'package:fidelia_user/core/model/venue.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

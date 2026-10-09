@@ -1,5 +1,5 @@
-name: hossouko_user
-description: Hossouko for customers - find a maquis, find the on-duty pharmacy, pay with mobile money, earn loyalty points.
+name: fidelia_user
+description: Fidelia for customers - find a maquis, find the on-duty pharmacy, pay with mobile money, earn loyalty points.
 publish_to: none
 
 # versionCode+versionName. Bump the build number on every release build.
@@ -53,7 +53,7 @@ flutter:
   uses-material-design: true
 
   # The site's display face, for titles and big numerals only (~70KB per
-  # style). It is what makes the app read as the same brand as hossouko-Web.
+  # style). It is what makes the app read as the same brand as fidelia-Web.
   # SIL Open Font License, see assets/fonts/OFL.txt.
   fonts:
     - family: InstrumentSerif

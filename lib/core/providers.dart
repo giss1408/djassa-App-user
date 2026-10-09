@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'auth/auth_repository.dart';
 import 'auth/token_store.dart';
-import 'hossouko_api.dart';
+import 'fidelia_api.dart';
 import 'monitoring/usage_tracker.dart';
 import 'net/api_client.dart';
 
@@ -45,14 +45,14 @@ final Provider<AuthRepository> authRepositoryProvider = Provider<AuthRepository>
   );
 });
 
-final hossoukoApiProvider = Provider<HossoukoApi>((ref) => HossoukoApi(ref.watch(apiClientProvider)));
+final fideliaApiProvider = Provider<FideliaApi>((ref) => FideliaApi(ref.watch(apiClientProvider)));
 
 /// The suggestions WhatsApp link, null while hidden. Never an error: a
 /// failure just keeps the menu entry out of sight.
 final suggestionsLinkProvider = FutureProvider.autoDispose<String?>((ref) async {
   if (!ref.watch(sessionProvider.select((s) => s.signedIn))) return null;
   try {
-    return await ref.watch(hossoukoApiProvider).suggestionsWhatsapp();
+    return await ref.watch(fideliaApiProvider).suggestionsWhatsapp();
   } catch (_) {
     return null;
   }

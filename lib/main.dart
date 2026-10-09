@@ -18,22 +18,22 @@ void main() {
   final reporter = ErrorReporter(app: 'user')..install();
   // Installs and what is seen, never tied to the customer's account.
   final usage = UsageTracker(app: 'user');
-  runApp(ProviderScope(overrides: [usageTrackerProvider.overrideWithValue(usage)], child: const HossoukoUserApp()));
+  runApp(ProviderScope(overrides: [usageTrackerProvider.overrideWithValue(usage)], child: const FideliaUserApp()));
   // Whatever an earlier session could not send goes now, once.
   unawaited(reporter.flush());
   unawaited(usage.start());
 }
 
-class HossoukoUserApp extends ConsumerWidget {
-  const HossoukoUserApp({super.key});
+class FideliaUserApp extends ConsumerWidget {
+  const FideliaUserApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Hossouko',
+      title: 'Fidelia',
       debugShowCheckedModeBanner: false,
       navigatorObservers: [ref.read(usageTrackerProvider).navigatorObserver],
-      theme: hossoukoTheme(),
+      theme: fideliaTheme(),
       home: const _SessionGate(),
     );
   }

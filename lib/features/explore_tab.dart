@@ -39,7 +39,7 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
     super.initState();
     _category = widget.initialCategory;
     _load();
-    ref.read(hossoukoApiProvider).categories().then((c) {
+    ref.read(fideliaApiProvider).categories().then((c) {
       if (mounted && c.isNotEmpty) setState(() => _categories = c);
     }).catchError((_) {}); // keep the built-in list
   }
@@ -61,7 +61,7 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final venues = await ref.read(hossoukoApiProvider).venues(category: _category, query: _query.text, commune: _commune);
+      final venues = await ref.read(fideliaApiProvider).venues(category: _category, query: _query.text, commune: _commune);
       if (mounted) setState(() => _venues = venues);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
@@ -95,7 +95,7 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
             title: Strings.exploreTitle,
             subtitle: 'Abidjan',
             child: DecoratedBox(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(HossoukoRadius.md), boxShadow: hossoukoShadowStrong),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(FideliaRadius.md), boxShadow: fideliaShadowStrong),
               child: TextField(
                 controller: _query,
                 onChanged: _onQueryChanged,
@@ -117,8 +117,8 @@ class ExploreTabState extends ConsumerState<ExploreTab> {
                             setState(() {});
                           },
                         ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(HossoukoRadius.md), borderSide: BorderSide.none),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(HossoukoRadius.md), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(FideliaRadius.md), borderSide: BorderSide.none),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(FideliaRadius.md), borderSide: BorderSide.none),
                 ),
               ),
             ),
@@ -185,7 +185,7 @@ class _OnDutyBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SoftCard(
-      color: HossoukoColors.pharmacyTint,
+      color: FideliaColors.pharmacyTint,
       onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'pharmacies'), builder: (_) => const PharmaciesScreen())),
       padding: const EdgeInsets.all(14),
       child: const Row(children: [
@@ -194,10 +194,10 @@ class _OnDutyBanner extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(Strings.onDutyBanner, style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF0B5E3F))),
-            Text(Strings.onDutyBannerAction, style: TextStyle(fontSize: 13.5, color: HossoukoColors.pharmacy, fontWeight: FontWeight.w600)),
+            Text(Strings.onDutyBannerAction, style: TextStyle(fontSize: 13.5, color: FideliaColors.pharmacy, fontWeight: FontWeight.w600)),
           ]),
         ),
-        Icon(Icons.chevron_right_rounded, color: HossoukoColors.pharmacy),
+        Icon(Icons.chevron_right_rounded, color: FideliaColors.pharmacy),
       ]),
     );
   }

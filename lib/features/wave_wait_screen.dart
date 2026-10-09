@@ -17,7 +17,7 @@ import 'receipt_screen.dart';
 /// The server created a checkout with the MERCHANT's own Wave account, so the
 /// money goes straight to them. This screen opens Wave's page (which hands
 /// over to the Wave app), then asks the server for the outcome: every few
-/// seconds, and at once when the customer comes back to Hossouko. The server
+/// seconds, and at once when the customer comes back to Fidelia. The server
 /// re-reads the checkout from Wave, so a late notification does not block.
 ///
 /// Pops what the receipt pops (`true` = try again after a decline).
@@ -84,7 +84,7 @@ class _WaveWaitScreenState extends ConsumerState<WaveWaitScreen> with WidgetsBin
     }
     _checking = true;
     try {
-      final p = await ref.read(hossoukoApiProvider).payment(widget.payment.id);
+      final p = await ref.read(fideliaApiProvider).payment(widget.payment.id);
       if (!mounted || p.status == 'pending') return;
       _done = true;
       _timer?.cancel();
@@ -140,7 +140,7 @@ class _WaveWaitScreenState extends ConsumerState<WaveWaitScreen> with WidgetsBin
               const SizedBox(height: 8),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text(Strings.done, style: TextStyle(color: HossoukoColors.muted)),
+                child: const Text(Strings.done, style: TextStyle(color: FideliaColors.muted)),
               ),
             ],
           ),

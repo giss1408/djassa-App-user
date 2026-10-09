@@ -27,7 +27,7 @@ class _DealsTabState extends ConsumerState<DealsTab> {
   void initState() {
     super.initState();
     _load();
-    ref.read(hossoukoApiProvider).categories().then((c) {
+    ref.read(fideliaApiProvider).categories().then((c) {
       if (mounted && c.isNotEmpty) setState(() => _categories = c);
     }).catchError((_) {});
   }
@@ -35,7 +35,7 @@ class _DealsTabState extends ConsumerState<DealsTab> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final deals = await ref.read(hossoukoApiProvider).deals(category: _category);
+      final deals = await ref.read(fideliaApiProvider).deals(category: _category);
       if (mounted) setState(() => _deals = deals);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
@@ -65,7 +65,7 @@ class _DealsTabState extends ConsumerState<DealsTab> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.local_offer_rounded, color: HossoukoColors.orangeDeep, size: 26),
+              child: const Icon(Icons.local_offer_rounded, color: FideliaColors.orangeDeep, size: 26),
             ),
           ),
           const SizedBox(height: 14),

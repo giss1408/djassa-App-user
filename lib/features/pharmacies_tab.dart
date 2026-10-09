@@ -38,7 +38,7 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final list = await ref.read(hossoukoApiProvider).onDutyPharmacies(commune: _commune);
+      final list = await ref.read(fideliaApiProvider).onDutyPharmacies(commune: _commune);
       if (mounted) setState(() => _pharmacies = list);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
@@ -72,7 +72,7 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                   )
                 : null,
             gradient: const LinearGradient(
-              colors: [HossoukoColors.pharmacy, Color(0xFF0B5E3F)],
+              colors: [FideliaColors.pharmacy, Color(0xFF0B5E3F)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -80,7 +80,7 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.local_pharmacy_rounded, color: HossoukoColors.pharmacy, size: 28),
+              child: const Icon(Icons.local_pharmacy_rounded, color: FideliaColors.pharmacy, size: 28),
             ),
           ),
           const SizedBox(height: 14),
@@ -111,10 +111,10 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: p.id))),
                       footer: Container(
                         padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-                        decoration: BoxDecoration(color: HossoukoColors.pharmacyTint, borderRadius: BorderRadius.circular(HossoukoRadius.md)),
+                        decoration: BoxDecoration(color: FideliaColors.pharmacyTint, borderRadius: BorderRadius.circular(FideliaRadius.md)),
                         child: Row(
                           children: [
-                            const Icon(Icons.nightlight_round, size: 18, color: HossoukoColors.pharmacy),
+                            const Icon(Icons.nightlight_round, size: 18, color: FideliaColors.pharmacy),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
@@ -122,7 +122,7 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                                 children: [
                                   const Text(Strings.onDuty,
                                       style: TextStyle(
-                                          fontSize: 11.5, fontWeight: FontWeight.w800, color: HossoukoColors.pharmacy, letterSpacing: 0.8)),
+                                          fontSize: 11.5, fontWeight: FontWeight.w800, color: FideliaColors.pharmacy, letterSpacing: 0.8)),
                                   if (p.dutyEndsAt != null)
                                     Text('${Strings.until} ${Strings.dateTime(p.dutyEndsAt!)}',
                                         style: text.bodySmall?.copyWith(color: const Color(0xFF0B5E3F), fontWeight: FontWeight.w600)),
@@ -132,14 +132,14 @@ class _PharmaciesTabState extends ConsumerState<PharmaciesTab> {
                             // At night, the route matters as much as the call.
                             IconButton.filledTonal(
                               onPressed: () => openDirections(context, p),
-                              icon: const Icon(Icons.directions_rounded, color: HossoukoColors.pharmacy),
+                              icon: const Icon(Icons.directions_rounded, color: FideliaColors.pharmacy),
                               tooltip: Strings.directions,
                             ),
                             const SizedBox(width: 6),
                             if (p.phone != null)
                               FilledButton.icon(
                                 style: FilledButton.styleFrom(
-                                  backgroundColor: HossoukoColors.pharmacy,
+                                  backgroundColor: FideliaColors.pharmacy,
                                   minimumSize: const Size(0, 44),
                                   padding: const EdgeInsets.symmetric(horizontal: 14),
                                   textStyle: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:hossouko_user/core/model/venue.dart';
-import 'package:hossouko_user/core/personal_lists.dart';
+import 'package:fidelia_user/core/model/venue.dart';
+import 'package:fidelia_user/core/personal_lists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,7 +22,7 @@ void main() {
   PersonalLists state() => container.read(personalListsProvider);
 
   setUp(() {
-    dir = Directory.systemTemp.createTempSync('hossouko_lists_');
+    dir = Directory.systemTemp.createTempSync('fidelia_lists_');
     container = open();
   });
 

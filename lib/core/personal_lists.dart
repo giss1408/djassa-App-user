@@ -9,7 +9,7 @@ import 'model/venue.dart';
 /// Favourite shops (the star), recent searches and recently viewed shops.
 ///
 /// Kept on the phone only, in one small file: they work without an account,
-/// cost no data, and tell Hossouko nothing about what the customer looks at.
+/// cost no data, and tell Fidelia nothing about what the customer looks at.
 /// Uninstalling the app or "Effacer" removes them.
 class PersonalLists {
   const PersonalLists({

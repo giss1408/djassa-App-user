@@ -4,14 +4,14 @@ class Strings {
   const Strings._();
 
   // Sign-in
-  static const signInTitle = 'Bienvenue sur Hossouko';
+  static const signInTitle = 'Bienvenue sur Fidelia';
   static const signInSubtitle = 'Vos maquis, votre pharmacie de garde, vos paiements et vos points, au même endroit.';
   static const signInPhoneLabel = 'Numéro de téléphone';
   static const signInPhoneHint = '07 12 34 56 78';
   static const signInPhoneHelper = 'Vous recevrez un code par SMS.';
   // Loyalty consent (Law 2013-450, art. 14). Never pre-ticked.
   static const loyaltyConsent =
-      "J'accepte que Hossouko garde mon numéro pour relier mes achats chez les commerçants partenaires (y compris mes paiements Wave) et me donner des points. Je peux retirer mon accord à tout moment dans Mon compte.";
+      "J'accepte que Fidelia garde mon numéro pour relier mes achats chez les commerçants partenaires (y compris mes paiements Wave) et me donner des points. Je peux retirer mon accord à tout moment dans Mon compte.";
   static const loyaltyConsentTitle = 'Points de fidélité';
   static const loyaltyConsentOn = 'Mes achats sont reliés à mon numéro.';
   static const loyaltyConsentOff = 'Vos achats ne vous rapportent pas de points.';
@@ -35,7 +35,7 @@ class Strings {
   static const signInToSeePoints = 'Connectez-vous pour voir vos points et vos récompenses.';
   static const pointsSignedOut = 'Gagnez des points';
   static const pointsSignedOutHint = 'Connectez-vous';
-  // Suggestions to the Hossouko team (unlocked at 100 points).
+  // Suggestions to the Fidelia team (unlocked at 100 points).
   static const suggestions = 'Aide';
   static const suggestionsFailed = "WhatsApp n'a pas pu s'ouvrir.";
   // Corner banner on a deal's image.
@@ -75,7 +75,7 @@ class Strings {
   static const signOutOthersDone = 'Les autres téléphones sont déconnectés.';
   static const lostNumber = 'Numéro perdu ?';
   static const lostNumberTitle = 'Récupérer mon compte';
-  static const lostNumberIntro = 'Votre ancien numéro ne marche plus ? Vérifiez votre nouveau numéro, puis dites-nous qui vous êtes. Hossouko vérifie et transfère votre compte.';
+  static const lostNumberIntro = 'Votre ancien numéro ne marche plus ? Vérifiez votre nouveau numéro, puis dites-nous qui vous êtes. Fidelia vérifie et transfère votre compte.';
   static const oldPhone = 'Ancien numéro';
   static const recoveryDetails = 'Pour vous reconnaître';
   static const recoveryDetailsHint = 'Votre nom, les maquis ou pharmacies où vous gagnez des points, votre dernier achat…';
@@ -104,7 +104,7 @@ class Strings {
   static const onDutyNow = 'De garde maintenant';
   static const seeAll = 'Tout voir';
   static const recentPayments = 'Derniers paiements';
-  static const aboutNameLink = 'Pourquoi Hossouko ?';
+  static const aboutNameLink = 'Pourquoi Fidelia ?';
 
   // Explore
   static const exploreTitle = 'Explorer';
@@ -148,7 +148,7 @@ class Strings {
   static const directions = 'Itinéraire';
   static const directionsFailed = 'Impossible d\'ouvrir les cartes.';
   static const directionsApprox = 'Position approximative : recherche par nom et adresse.';
-  static const acceptsHossouko = 'Paiement Hossouko';
+  static const acceptsFidelia = 'Paiement Fidelia';
   static const pointsPer100 = 'pt / 100 F';
 
   // Venue
@@ -156,8 +156,8 @@ class Strings {
   static const hours = 'Horaires';
   static const address = 'Adresse';
   static const phone = 'Téléphone';
-  static const payHereHint = 'Au comptoir, scannez le QR code Hossouko du commerçant pour payer.';
-  static const noPaymentHere = 'Ce lieu n\'accepte pas encore le paiement Hossouko.';
+  static const payHereHint = 'Au comptoir, scannez le QR code Fidelia du commerçant pour payer.';
+  static const noPaymentHere = 'Ce lieu n\'accepte pas encore le paiement Fidelia.';
   static const yourPointsHere = 'Vos points ici';
   static const rewards = 'Récompenses';
   static const nextReward = 'Prochaine récompense';
@@ -165,19 +165,19 @@ class Strings {
 
   // Scan
   static const scanTitle = 'Scannez le QR code';
-  static const scanHint = 'Visez le QR code Hossouko affiché par le commerçant.';
+  static const scanHint = 'Visez le QR code Fidelia affiché par le commerçant.';
   static const torch = 'Lampe';
   static const typeCode = 'Saisir le code';
   static const typeCodeHint = 'Code sous le QR (10 caractères)';
   static const checking = 'Vérification du QR code…';
-  static const notHossoukoQr = 'Ce QR code n\'est pas un QR code de paiement Hossouko.';
+  static const notFideliaQr = 'Ce QR code n\'est pas un QR code de paiement Fidelia.';
   static const cameraDenied = 'Autorisez l\'appareil photo pour scanner, ou saisissez le code.';
   static const scannerUnavailable = 'Le scanner ne démarre pas sur ce téléphone. Touchez « Saisir le code » et tapez le code affiché sous le QR.';
   static const validate = 'Valider';
 
   // Confirm
   static const confirmTitle = 'Confirmer le paiement';
-  static const verifiedMerchant = 'Commerçant vérifié par Hossouko';
+  static const verifiedMerchant = 'Commerçant vérifié par Fidelia';
   static const receivedOn = 'Reçu sur';
   static const amountFixed = 'Montant demandé par le commerçant';
   static const amount = 'Montant';
@@ -191,7 +191,7 @@ class Strings {
   static const paying = 'Paiement en cours…';
   static const amountInvalid = 'Montant entre 100 et 2 000 000 F.';
   static const phoneInvalid = 'Numéro de portefeuille invalide.';
-  static const fundsNotice = 'L\'argent va directement de votre portefeuille à celui du commerçant. Hossouko ne garde jamais votre argent.';
+  static const fundsNotice = 'L\'argent va directement de votre portefeuille à celui du commerçant. Fidelia ne garde jamais votre argent.';
   static const payNetworkError =
       'Pas de réponse. Votre paiement n\'a peut-être pas abouti : appuyez sur Réessayer, vous ne serez pas débité deux fois.';
   static const sheetTitle = 'Vous allez payer';
@@ -222,7 +222,7 @@ class Strings {
   static const loyaltyTitle = 'Ma fidélité';
   static const noPointsYet = 'Pas encore de points';
   static const noPointsHint =
-      'Payez avec Hossouko dans un maquis ou une pharmacie : chaque paiement vous rapporte des points chez ce commerçant.';
+      'Payez avec Fidelia dans un maquis ou une pharmacie : chaque paiement vous rapporte des points chez ce commerçant.';
   static const redeem = 'Utiliser';
   static const missing = 'encore';
   static const places = 'commerces';
@@ -236,7 +236,7 @@ class Strings {
   static const spentAt = 'Utilisés chez';
   // "Payer en plusieurs fois". Never "crédit": the customer pays first.
   static const layawayTitle = 'Paiements en plusieurs fois';
-  static const layawayMoneyNote = 'L\'argent est gardé par le commerçant, pas par Hossouko. Il vous remet le produit quand le prix est atteint.';
+  static const layawayMoneyNote = 'L\'argent est gardé par le commerçant, pas par Fidelia. Il vous remet le produit quand le prix est atteint.';
   static const layawayPaid = 'payé sur';
   static const layawayRemaining = 'Reste';
   static const layawayBefore = 'avant le';
@@ -251,15 +251,15 @@ class Strings {
   static const noPaymentsHint = 'Scannez le QR code d\'un commerçant pour payer avec votre mobile money.';
 
   // About the name: built on the slogan, no dictionary claim about the word.
-  static const aboutNameTitle = 'Le nom Hossouko';
-  static const aboutNameGrammar = '« La fidélité, ça rapporte »';
+  static const aboutNameTitle = 'Le nom Fidelia';
+  static const aboutNameGrammar = '« La fidélité, ça compte »';
   static const aboutNameOrigin = 'Notre promesse';
   static const aboutNameSense1 =
       'Chaque achat chez vos commerçants habituels vous rapporte des points, et vos points deviennent des récompenses.';
   static const aboutNameSense2 =
       'Retrouvez votre maquis, votre pharmacie de garde et les bons plans du quartier, et payez simplement avec votre mobile money.';
   static const aboutNameWhy =
-      'Hossouko, c\'est la vie de tous les jours : être fidèle à ceux qu\'on aime, et en être récompensé.';
+      'Fidelia vient de « fidélité » : être fidèle à ses commerçants de tous les jours, et que ça compte.';
 
   /// Communes offered as filters. Abidjan first; more as venues sign up.
   static const communes = ['Abobo', 'Cocody', 'Koumassi', 'Marcory', 'Plateau', 'Treichville', 'Yopougon'];

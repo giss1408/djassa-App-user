@@ -4,7 +4,7 @@ import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 
-/// Presents the name Hossouko and its slogan, laid out like a dictionary entry.
+/// Presents the name Fidelia and its slogan, laid out like a dictionary entry.
 class AboutNameScreen extends StatelessWidget {
   const AboutNameScreen({super.key});
 
@@ -19,17 +19,17 @@ class AboutNameScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
-              color: HossoukoColors.surface,
-              borderRadius: BorderRadius.circular(HossoukoRadius.lg),
-              border: const Border(left: BorderSide(color: HossoukoColors.orange, width: 4)),
-              boxShadow: hossoukoShadow,
+              color: FideliaColors.surface,
+              borderRadius: BorderRadius.circular(FideliaRadius.lg),
+              border: const Border(left: BorderSide(color: FideliaColors.orange, width: 4)),
+              boxShadow: fideliaShadow,
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('hossouko', style: text.displaySmall?.copyWith(fontStyle: FontStyle.italic, fontSize: 56)),
+              Text('fidelia', style: text.displaySmall?.copyWith(fontStyle: FontStyle.italic, fontSize: 56)),
               const SizedBox(height: 6),
-              Text(Strings.aboutNameGrammar, style: text.bodyMedium?.copyWith(color: HossoukoColors.muted)),
+              Text(Strings.aboutNameGrammar, style: text.bodyMedium?.copyWith(color: FideliaColors.muted)),
               const SizedBox(height: 4),
-              Text(Strings.aboutNameOrigin.toUpperCase(), style: text.labelSmall?.copyWith(color: HossoukoColors.orangeDeep)),
+              Text(Strings.aboutNameOrigin.toUpperCase(), style: text.labelSmall?.copyWith(color: FideliaColors.orangeDeep)),
             ]),
           ),
           const SizedBox(height: 22),
@@ -41,8 +41,8 @@ class AboutNameScreen extends StatelessWidget {
                   width: 28,
                   height: 28,
                   alignment: Alignment.center,
-                  decoration: const BoxDecoration(color: HossoukoColors.orangeTint, shape: BoxShape.circle),
-                  child: Text('${i + 1}', style: const TextStyle(fontWeight: FontWeight.w800, color: HossoukoColors.orangeDeep)),
+                  decoration: const BoxDecoration(color: FideliaColors.orangeTint, shape: BoxShape.circle),
+                  child: Text('${i + 1}', style: const TextStyle(fontWeight: FontWeight.w800, color: FideliaColors.orangeDeep)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(child: Text(sense, style: text.bodyLarge)),
@@ -50,9 +50,9 @@ class AboutNameScreen extends StatelessWidget {
             ),
           const SizedBox(height: 6),
           SoftCard(
-            color: HossoukoColors.sand,
+            color: FideliaColors.sand,
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Icon(Icons.auto_awesome_rounded, color: HossoukoColors.orangeDeep),
+              const Icon(Icons.auto_awesome_rounded, color: FideliaColors.orangeDeep),
               const SizedBox(width: 12),
               Expanded(child: Text(Strings.aboutNameWhy, style: text.bodyMedium?.copyWith(fontStyle: FontStyle.italic))),
             ]),

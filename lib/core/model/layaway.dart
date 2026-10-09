@@ -1,6 +1,6 @@
 /// A good the customer is paying for in several installments at one shop
 /// (`GET /api/customer/layaway`). The shop keeps the money and hands the good
-/// over once the price is reached; Hossouko only keeps the record.
+/// over once the price is reached; Fidelia only keeps the record.
 class LayawayPlan {
   const LayawayPlan({
     required this.id,

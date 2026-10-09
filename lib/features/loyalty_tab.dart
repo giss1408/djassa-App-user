@@ -37,13 +37,13 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
     setState(() => _error = null);
     if (!ref.read(sessionProvider).signedIn) return;
     try {
-      final l = await ref.read(hossoukoApiProvider).loyalty();
+      final l = await ref.read(fideliaApiProvider).loyalty();
       if (mounted) setState(() => _loyalty = l);
     } on Exception catch (e) {
       if (mounted) setState(() => _error = e);
     }
     try {
-      final plans = await ref.read(hossoukoApiProvider).layaway();
+      final plans = await ref.read(fideliaApiProvider).layaway();
       if (mounted) setState(() => _plans = plans);
     } on Exception {
       // Most customers have none, and an older server has no such route:
@@ -54,7 +54,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
   Future<void> _redeem(Reward reward) async {
     setState(() => _redeeming = reward.id);
     try {
-      final voucher = await ref.read(hossoukoApiProvider).redeem(reward.id);
+      final voucher = await ref.read(fideliaApiProvider).redeem(reward.id);
       if (!mounted) return;
       await showModalBottomSheet<void>(context: context, builder: (_) => _VoucherSheet(voucher: voucher));
     } on ApiException catch (e) {
@@ -79,7 +79,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
           GradientHeader(
             title: Strings.loyaltyTitle,
             subtitle: Strings.myPoints,
-            gradient: HossoukoColors.loyaltyGradient,
+            gradient: FideliaColors.loyaltyGradient,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -106,7 +106,7 @@ class _LoyaltyTabState extends ConsumerState<LoyaltyTab> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.info_outline_rounded, size: 17, color: HossoukoColors.muted),
+                      const Icon(Icons.info_outline_rounded, size: 17, color: FideliaColors.muted),
                       const SizedBox(width: 8),
                       Expanded(child: Text(Strings.noCashOut, style: text.bodySmall)),
                     ],
@@ -164,7 +164,7 @@ class _VenueLoyaltyCard extends StatelessWidget {
               children: [
                 _ProgressRing(
                   value: next == null ? 1 : balance.points / next.costPoints,
-                  child: Text('${balance.points}', style: serifStyle(26, color: HossoukoColors.green, height: 1)),
+                  child: Text('${balance.points}', style: serifStyle(26, color: FideliaColors.green, height: 1)),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -178,12 +178,12 @@ class _VenueLoyaltyCard extends StatelessWidget {
                           TextSpan(children: [
                             TextSpan(text: '${Strings.missing} ${next.costPoints - balance.points} ${Strings.pts} '),
                             TextSpan(
-                                text: '→ ${next.title}', style: const TextStyle(fontWeight: FontWeight.w700, color: HossoukoColors.inkSoft)),
+                                text: '→ ${next.title}', style: const TextStyle(fontWeight: FontWeight.w700, color: FideliaColors.inkSoft)),
                           ]),
                           style: text.bodySmall,
                         )
                       else
-                        Text(Strings.allUnlocked, style: text.bodySmall?.copyWith(color: HossoukoColors.green, fontWeight: FontWeight.w700)),
+                        Text(Strings.allUnlocked, style: text.bodySmall?.copyWith(color: FideliaColors.green, fontWeight: FontWeight.w700)),
                     ],
                   ),
                 ),
@@ -196,15 +196,15 @@ class _VenueLoyaltyCard extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 3),
                 padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
                 decoration: BoxDecoration(
-                  color: balance.points >= r.costPoints ? HossoukoColors.greenTint : Colors.transparent,
-                  borderRadius: BorderRadius.circular(HossoukoRadius.sm + 2),
+                  color: balance.points >= r.costPoints ? FideliaColors.greenTint : Colors.transparent,
+                  borderRadius: BorderRadius.circular(FideliaRadius.sm + 2),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       balance.points >= r.costPoints ? Icons.lock_open_rounded : Icons.lock_outline_rounded,
                       size: 18,
-                      color: balance.points >= r.costPoints ? HossoukoColors.green : HossoukoColors.muted,
+                      color: balance.points >= r.costPoints ? FideliaColors.green : FideliaColors.muted,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -219,7 +219,7 @@ class _VenueLoyaltyCard extends StatelessWidget {
                     if (balance.points >= r.costPoints)
                       FilledButton(
                         style: FilledButton.styleFrom(
-                          backgroundColor: HossoukoColors.green,
+                          backgroundColor: FideliaColors.green,
                           minimumSize: const Size(0, 40),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
@@ -258,8 +258,8 @@ class _ProgressRing extends StatelessWidget {
             value: value.clamp(0, 1).toDouble(),
             strokeWidth: 5,
             strokeCap: StrokeCap.round,
-            backgroundColor: HossoukoColors.greenTint,
-            color: HossoukoColors.green,
+            backgroundColor: FideliaColors.greenTint,
+            color: FideliaColors.green,
           ),
           Center(child: child),
         ],
@@ -284,9 +284,9 @@ class _HistoryRow extends StatelessWidget {
           Container(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(color: earned ? HossoukoColors.greenTint : HossoukoColors.orangeTint, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: earned ? FideliaColors.greenTint : FideliaColors.orangeTint, shape: BoxShape.circle),
             child: Icon(earned ? Icons.add_rounded : Icons.redeem_rounded,
-                size: 20, color: earned ? HossoukoColors.green : HossoukoColors.orangeDeep),
+                size: 20, color: earned ? FideliaColors.green : FideliaColors.orangeDeep),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -309,7 +309,7 @@ class _HistoryRow extends StatelessWidget {
             ),
           ),
           Text(earned ? '+${entry.points}' : '${entry.points}',
-              style: text.titleSmall?.copyWith(color: earned ? HossoukoColors.green : HossoukoColors.orangeDeep)),
+              style: text.titleSmall?.copyWith(color: earned ? FideliaColors.green : FideliaColors.orangeDeep)),
         ],
       ),
     );
@@ -330,14 +330,14 @@ class _VoucherSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.celebration_rounded, size: 44, color: HossoukoColors.orangeDeep),
+            const Icon(Icons.celebration_rounded, size: 44, color: FideliaColors.orangeDeep),
             const SizedBox(height: 10),
             Text(Strings.voucherTitle, style: text.headlineMedium),
             const SizedBox(height: 4),
             Text('${voucher.rewardTitle} · ${voucher.venueName}', style: text.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 20),
             DecoratedBox(
-              decoration: BoxDecoration(color: HossoukoColors.paper, borderRadius: BorderRadius.circular(HossoukoRadius.lg + 4)),
+              decoration: BoxDecoration(color: FideliaColors.paper, borderRadius: BorderRadius.circular(FideliaRadius.lg + 4)),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Ticket(
@@ -347,7 +347,7 @@ class _VoucherSheet extends StatelessWidget {
                       Text(Strings.voucherShow.toUpperCase(), style: text.labelSmall, textAlign: TextAlign.center),
                       const SizedBox(height: 8),
                       SelectableText(voucher.code,
-                          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: 10, color: HossoukoColors.ink)),
+                          style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: 10, color: FideliaColors.ink)),
                     ]),
                   ),
                   bottom: Padding(
@@ -378,7 +378,7 @@ class _SignedOut extends ConsumerWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        const GradientHeader(title: Strings.loyaltyTitle, subtitle: Strings.myPoints, gradient: HossoukoColors.loyaltyGradient),
+        const GradientHeader(title: Strings.loyaltyTitle, subtitle: Strings.myPoints, gradient: FideliaColors.loyaltyGradient),
         Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -429,14 +429,14 @@ class LayawayCard extends StatelessWidget {
             const SizedBox(height: 10),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(value: plan.progress, minHeight: 8, color: HossoukoColors.green),
+              child: LinearProgressIndicator(value: plan.progress, minHeight: 8, color: FideliaColors.green),
             ),
             const SizedBox(height: 8),
             Text('${_f(plan.paid)} ${Strings.layawayPaid} ${_f(plan.price)} · ${plan.installments.length} ${Strings.layawayPayments}',
                 style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
             Text(_status,
                 style: text.bodySmall?.copyWith(
-                    color: plan.status == 'completed' ? HossoukoColors.green : null,
+                    color: plan.status == 'completed' ? FideliaColors.green : null,
                     fontWeight: plan.status == 'completed' ? FontWeight.w700 : null)),
           ],
         ),

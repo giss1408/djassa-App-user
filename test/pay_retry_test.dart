@@ -1,13 +1,13 @@
-import 'package:hossouko_user/core/hossouko_api.dart';
-import 'package:hossouko_user/core/model/payment.dart';
-import 'package:hossouko_user/core/model/deal.dart';
-import 'package:hossouko_user/core/model/venue.dart';
-import 'package:hossouko_user/core/net/api_client.dart';
-import 'package:hossouko_user/core/net/api_exception.dart';
-import 'package:hossouko_user/core/providers.dart';
-import 'package:hossouko_user/features/confirm_pay_screen.dart';
-import 'package:hossouko_user/l10n/strings.dart';
-import 'package:hossouko_user/ui/theme.dart';
+import 'package:fidelia_user/core/fidelia_api.dart';
+import 'package:fidelia_user/core/model/payment.dart';
+import 'package:fidelia_user/core/model/deal.dart';
+import 'package:fidelia_user/core/model/venue.dart';
+import 'package:fidelia_user/core/net/api_client.dart';
+import 'package:fidelia_user/core/net/api_exception.dart';
+import 'package:fidelia_user/core/providers.dart';
+import 'package:fidelia_user/features/confirm_pay_screen.dart';
+import 'package:fidelia_user/l10n/strings.dart';
+import 'package:fidelia_user/ui/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +16,7 @@ import 'package:http/testing.dart';
 
 /// Records every idempotency key; fails the first call like a dropped
 /// connection, then succeeds.
-class _FlakyApi extends HossoukoApi {
+class _FlakyApi extends FideliaApi {
   _FlakyApi() : super(ApiClient(
           inner: MockClient((_) async => http.Response('{}', 500)),
           tokenProvider: () async => 't',
@@ -71,8 +71,8 @@ void main() {
     addTearDown(tester.view.reset);
     final api = _FlakyApi();
     await tester.pumpWidget(ProviderScope(
-      overrides: [hossoukoApiProvider.overrideWithValue(api)],
-      child: MaterialApp(theme: hossoukoTheme(), home: const ConfirmPayScreen(target: _target)),
+      overrides: [fideliaApiProvider.overrideWithValue(api)],
+      child: MaterialApp(theme: fideliaTheme(), home: const ConfirmPayScreen(target: _target)),
     ));
 
     await tester.enterText(find.byKey(const Key('pay-amount')), '5000');

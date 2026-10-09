@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:hossouko_user/core/monitoring/usage_tracker.dart';
+import 'package:fidelia_user/core/monitoring/usage_tracker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;

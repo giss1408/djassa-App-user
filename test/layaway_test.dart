@@ -1,7 +1,7 @@
-import 'package:hossouko_user/core/model/layaway.dart';
-import 'package:hossouko_user/features/loyalty_tab.dart';
-import 'package:hossouko_user/l10n/strings.dart';
-import 'package:hossouko_user/ui/theme.dart';
+import 'package:fidelia_user/core/model/layaway.dart';
+import 'package:fidelia_user/features/loyalty_tab.dart';
+import 'package:fidelia_user/l10n/strings.dart';
+import 'package:fidelia_user/ui/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,7 +21,7 @@ Map<String, Object?> _json({String status = 'open', int paid = 30000, int? refun
     };
 
 Future<void> _pump(WidgetTester tester, LayawayPlan plan) => tester.pumpWidget(
-      MaterialApp(theme: hossoukoTheme(), home: Scaffold(body: LayawayCard(plan: plan))),
+      MaterialApp(theme: fideliaTheme(), home: Scaffold(body: LayawayCard(plan: plan))),
     );
 
 /// A customer sees the goods they are paying for in installments, at any shop,

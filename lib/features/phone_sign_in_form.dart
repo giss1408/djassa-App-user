@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/auth/auth_repository.dart';
 import '../core/config/env.dart';
-import '../core/hossouko_api.dart';
+import '../core/fidelia_api.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
 import 'account_screen.dart';
@@ -24,7 +24,7 @@ class PhoneSignInForm extends ConsumerStatefulWidget {
 }
 
 class _PhoneSignInFormState extends ConsumerState<PhoneSignInForm> {
-  // Prefilled only in debug builds given HOSSOUKO_DEV_PHONE. See Env.
+  // Prefilled only in debug builds given FIDELIA_DEV_PHONE. See Env.
   final _phone = TextEditingController(text: Env.devPhone);
   final _code = TextEditingController();
   bool _codeStep = false;

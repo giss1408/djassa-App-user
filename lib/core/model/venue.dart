@@ -89,7 +89,7 @@ class Venue {
   /// Loyalty points per 100 F paid. 0 means the venue is not in the programme.
   final int pointsPer100;
 
-  /// Whether the venue has a payout wallet, i.e. can be paid through Hossouko.
+  /// Whether the venue has a payout wallet, i.e. can be paid through Fidelia.
   final bool acceptsPayment;
 
   /// Demo data. Always shown as such: a sample pharmacy must never pass for a
