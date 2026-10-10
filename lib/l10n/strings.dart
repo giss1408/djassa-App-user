@@ -8,6 +8,7 @@ class Strings {
   static const signInSubtitle = 'Vos maquis, votre pharmacie de garde, vos paiements et vos points, au même endroit.';
   static const signInPhoneLabel = 'Numéro de téléphone';
   static const signInPhoneHint = '07 12 34 56 78';
+  static const signInPhoneMissing = 'Entrez votre numéro de téléphone.';
   static const signInPhoneHelper = 'Vous recevrez un code par SMS.';
   // Loyalty consent (Law 2013-450, art. 14). Never pre-ticked.
   static const loyaltyConsent =
