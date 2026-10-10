@@ -13,6 +13,10 @@ v0.1.7, briefly **Hossouko**, and is **Fidelia** from v0.2.0.
   day; tapping it opens the shop. Your choices stay on the phone (Firebase
   topics, no device token sent to Fidelia). Needs a build with the
   `FIREBASE_*` defines.
+- **Network errors in French**: timeouts, no connection, secure-connection
+  failures, server unavailable, refused requests and unexpected responses now
+  show a French message saying what to do. Signing in with an empty number
+  asks for the number instead of showing "The request was refused".
 
 ## v0.2.0 — 2026-10-09
 
