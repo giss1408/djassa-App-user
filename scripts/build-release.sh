@@ -42,10 +42,25 @@ for arg in "$@"; do
 done
 APP_VERSION="$BUILD_NAME+$BUILD_NUMBER"
 
+# Offer alerts (lib/core/push/), from the Firebase project's Android app.
+# Optional: without all four, the build simply has no alerts.
+PUSH_DEFINES=()
+if [ -n "${FIREBASE_API_KEY:-}" ] && [ -n "${FIREBASE_APP_ID:-}" ] && [ -n "${FIREBASE_SENDER_ID:-}" ] && [ -n "${FIREBASE_PROJECT_ID:-}" ]; then
+  PUSH_DEFINES=(
+    --dart-define=FIREBASE_API_KEY="$FIREBASE_API_KEY"
+    --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID"
+    --dart-define=FIREBASE_SENDER_ID="$FIREBASE_SENDER_ID"
+    --dart-define=FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID"
+  )
+else
+  echo "note: FIREBASE_API_KEY/APP_ID/SENDER_ID/PROJECT_ID not all set; this build has no offer alerts." >&2
+fi
+
 flutter build apk --release \
   --obfuscate --split-debug-info="build/symbols/$APP_VERSION" \
   --dart-define=FIDELIA_API_BASE="$API_BASE" \
   --dart-define=FIDELIA_APP_VERSION="$APP_VERSION" \
+  ${PUSH_DEFINES[@]+"${PUSH_DEFINES[@]}"} \
   "$@"
 
 # The same build as an app bundle, the format Google Play takes. Its own
@@ -54,6 +69,7 @@ flutter build appbundle --release \
   --obfuscate --split-debug-info="build/symbols/$APP_VERSION/play" \
   --dart-define=FIDELIA_API_BASE="$API_BASE" \
   --dart-define=FIDELIA_APP_VERSION="$APP_VERSION" \
+  ${PUSH_DEFINES[@]+"${PUSH_DEFINES[@]}"} \
   "$@"
 
 echo

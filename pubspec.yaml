@@ -42,6 +42,16 @@ dependencies:
   # seen the video's size and tapped "Regarder".
   video_player: ^2.9.5
 
+  # Offer alerts (lib/core/push/). Firebase Cloud Messaging is the only way to
+  # wake an Android phone for free; WhatsApp and SMS alerts are not followed in
+  # Abidjan (docs/business/CONCEPT.md § 12). Used through topics only, so no
+  # device token is ever sent to Fidelia. Off unless the build passes the
+  # FIREBASE_* defines (lib/core/config/env.dart), so a build without them
+  # never contacts Firebase. 4.7 / 16.2 are the last releases that support
+  # Flutter 3.24.
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

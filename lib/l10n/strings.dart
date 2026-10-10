@@ -38,6 +38,19 @@ class Strings {
   // Suggestions to the Fidelia team (unlocked at 100 points).
   static const suggestions = 'Aide';
   static const suggestionsFailed = "WhatsApp n'a pas pu s'ouvrir.";
+  // Offer alerts (push), chosen on the phone.
+  static const offerAlerts = 'Alertes bons plans';
+  static const offerAlertsSwitch = 'Me prévenir des nouveaux bons plans';
+  static const offerAlertsHint =
+      'Une notification quand un commerce de votre commune ou de vos favoris publie un bon plan. '
+      'Au plus une par commerce et par jour.';
+  static const offerAlertsCommune = 'Ma commune';
+  static const offerAlertsFavoritesOnly = 'Mes favoris seulement';
+  static const offerAlertsDenied = 'Autorisez les notifications de Fidelia dans les réglages du téléphone.';
+  static const offerAlertsUnavailable = 'Les alertes ne sont pas disponibles dans cette version de l’application.';
+  static const offerAlertsOn = 'Alertes activées';
+  static const offerAlertsOff = 'Alertes désactivées';
+  static const seeOffer = 'Voir';
   // Corner banner on a deal's image.
   static const ribbonBonPlan = 'BON PLAN';
   static const ribbonFlash = 'FLASH';

@@ -153,6 +153,13 @@ jobs:
           echo "number=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
       - name: Build
+        # Offer alerts: the Firebase project's Android app values. Optional;
+        # without them the APK is built with alerts unavailable.
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_PUSH_API_KEY }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_SENDER_ID: ${{ secrets.FIREBASE_PUSH_SENDER_ID }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PUSH_PROJECT_ID }}
         run: scripts/build-release.sh "$API_BASE" --build-name="${{ steps.version.outputs.name }}" --build-number="${{ steps.version.outputs.number }}"
 
       - name: Stable file names

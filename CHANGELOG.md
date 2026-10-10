@@ -5,6 +5,15 @@ tags (`vX.Y.Z`); each one builds signed APKs (GitHub Releases) and, from
 v0.2.0, the bundle for Google Play. The app was called **Djassa** up to
 v0.1.7, briefly **Hossouko**, and is **Fidelia** from v0.2.0.
 
+## Unreleased
+
+- **Alertes bons plans**: the bell on the Bons plans tab turns on a
+  notification when a shop in your commune, or one of your favourites,
+  publishes a deal. Off until you turn it on; at most one alert per shop per
+  day; tapping it opens the shop. Your choices stay on the phone (Firebase
+  topics, no device token sent to Fidelia). Needs a build with the
+  `FIREBASE_*` defines.
+
 ## v0.2.0 — 2026-10-09
 
 First version prepared for Google Play.

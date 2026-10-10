@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/model/deal.dart';
 import '../core/providers.dart';
+import '../core/push/offer_alerts.dart';
 import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'offer_alerts_sheet.dart';
 import 'venue_screen.dart';
 
 /// "Bons plans": sponsored offers up top as large cards, then every live
@@ -47,8 +49,14 @@ class _DealsTabState extends ConsumerState<DealsTab> {
     Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'venue'), builder: (_) => VenueScreen(venueId: d.venueId)));
   }
 
+  void _alerts() {
+    ref.read(usageTrackerProvider).track('offer_alerts_opened');
+    showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (_) => const OfferAlertsSheet());
+  }
+
   @override
   Widget build(BuildContext context) {
+    final alertsOn = ref.watch(offerAlertsProvider.select((a) => a.enabled));
     final deals = _deals;
     final featured = deals?.where((d) => d.isFeatured).toList() ?? const <Deal>[];
     final rest = deals?.where((d) => !d.isFeatured).toList() ?? const <Deal>[];
@@ -61,11 +69,24 @@ class _DealsTabState extends ConsumerState<DealsTab> {
           GradientHeader(
             title: Strings.dealsTitle,
             subtitle: Strings.dealsSubtitle,
-            trailing: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.local_offer_rounded, color: FideliaColors.orangeDeep, size: 26),
+            // The bell: offer alerts, on or off at a glance.
+            trailing: Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: _alerts,
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Icon(
+                    alertsOn ? Icons.notifications_active_rounded : Icons.notifications_none_rounded,
+                    color: FideliaColors.orangeDeep,
+                    size: 26,
+                    semanticLabel: Strings.offerAlerts,
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 14),

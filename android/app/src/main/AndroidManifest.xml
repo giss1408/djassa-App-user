@@ -38,6 +38,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Offer alerts without a channel of their own land on "Bons plans"
+             (created in MainActivity), never on a generic one. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="offers" />
     </application>
 
     <!-- Android 11+ package visibility: lets url_launcher find the dialer. -->

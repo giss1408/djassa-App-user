@@ -43,6 +43,21 @@ class Env {
   /// --dart-define=FIDELIA_REPORT_ERRORS=true (to test the pipeline locally).
   static const bool reportErrors = isRelease || bool.fromEnvironment('FIDELIA_REPORT_ERRORS');
 
+  /// Firebase project of the offer alerts (lib/core/push/). From Firebase
+  /// console > Project settings > Your apps (Android), passed at build time:
+  ///   --dart-define=FIREBASE_API_KEY=... --dart-define=FIREBASE_APP_ID=...
+  ///   --dart-define=FIREBASE_SENDER_ID=... --dart-define=FIREBASE_PROJECT_ID=...
+  /// Without all four the app never contacts Firebase and the alerts screen
+  /// says alerts are unavailable in this build. Not secrets: they identify the
+  /// project, and Firebase restricts what an app key can do.
+  static const String firebaseApiKey = String.fromEnvironment('FIREBASE_API_KEY');
+  static const String firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+  static const String firebaseSenderId = String.fromEnvironment('FIREBASE_SENDER_ID');
+  static const String firebaseProjectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
+
+  static bool get pushConfigured =>
+      firebaseApiKey.isNotEmpty && firebaseAppId.isNotEmpty && firebaseSenderId.isNotEmpty && firebaseProjectId.isNotEmpty;
+
   /// Wall-clock budget for a single request. 10s: long enough for a slow 2G
   /// round trip, short enough that a dead connection shows the retry state
   /// instead of a spinner the customer gives up on. A timed-out payment is
