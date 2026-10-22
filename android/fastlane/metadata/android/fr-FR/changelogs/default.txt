@@ -1,1 +1,4 @@
 Première version sur Google Play.
+
+- Alertes bons plans : activez la cloche pour être prévenu des offres de votre commune et de vos favoris.
+- Messages d’erreur réseau en français, avec quoi faire.

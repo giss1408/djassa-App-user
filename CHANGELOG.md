@@ -5,7 +5,7 @@ tags (`vX.Y.Z`); each one builds signed APKs (GitHub Releases) and, from
 v0.2.0, the bundle for Google Play. The app was called **Djassa** up to
 v0.1.7, briefly **Hossouko**, and is **Fidelia** from v0.2.0.
 
-## Unreleased
+## v0.2.1 — 2026-10-22
 
 - **Alertes bons plans**: the bell on the Bons plans tab turns on a
   notification when a shop in your commune, or one of your favourites,
