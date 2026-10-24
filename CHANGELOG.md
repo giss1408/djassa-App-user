@@ -5,6 +5,16 @@ tags (`vX.Y.Z`); each one builds signed APKs (GitHub Releases) and, from
 v0.2.0, the bundle for Google Play. The app was called **Djassa** up to
 v0.1.7, briefly **Hossouko**, and is **Fidelia** from v0.2.0.
 
+## v0.2.2 — 2026-10-24
+
+- **Sign in with a password**: phone number and password replace the SMS
+  code, for signing in and creating an account. A number that had an account
+  before passwords is claimed with the WhatsApp code the team sends.
+- The team checks new numbers with a code sent on WhatsApp; a mistyped number
+  can be corrected. Forgotten and temporary passwords, number changes and
+  recovery after losing a number all go through the team on WhatsApp.
+- Says so when the number is not on WhatsApp.
+
 ## v0.2.1 — 2026-10-22
 
 - **Alertes bons plans**: the bell on the Bons plans tab turns on a
