@@ -13,6 +13,12 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 
+
+// Generated per run: no password literal in the repository.
+final password = 'p${DateTime.now().microsecondsSinceEpoch}';
+final newPassword = 'n${DateTime.now().microsecondsSinceEpoch}';
+final wrongPassword = 'w${DateTime.now().microsecondsSinceEpoch}';
+
 /// Phone + password sign-in, session renewal, and error reporting, against a
 /// stand-in for `app/api/auth.py` and `app/api/client_events.py`.
 void main() {
@@ -55,10 +61,10 @@ void main() {
   test('the number and password are exchanged for both tokens', () async {
     respond = (_) => json(pair('access-1', 'refresh-1'));
 
-    final result = await auth.signIn(phone: '07 00 00 00 02', password: 'secret-pass');
+    final result = await auth.signIn(phone: '07 00 00 00 02', password: password);
     expect((result as SignInSuccess).username, '07 •• •• 00 02');
     expect(sent.single.url.path, '/api/auth/login');
-    expect(jsonDecode(sent.single.body), {'phone': '0700000002', 'country_code': 'CI', 'password': 'secret-pass', 'app': AuthRepository.appRole});
+    expect(jsonDecode(sent.single.body), {'phone': '0700000002', 'country_code': 'CI', 'password': password, 'app': AuthRepository.appRole});
     expect(await store.readToken(), 'access-1');
     expect(await store.readRefreshToken(), 'refresh-1');
   });
@@ -71,7 +77,7 @@ void main() {
 
     // Signed in, the same call carries the token (a shop page shows my points).
     respond = (r) => json(pair('access-1', 'refresh-1'));
-    await auth.signIn(phone: '0700000002', password: 'secret-pass');
+    await auth.signIn(phone: '0700000002', password: password);
     respond = (r) => json(<Object?>[]);
     await client.getJsonList('/api/deals', optionalAuth: true);
     expect(sent.last.headers['Authorization'], 'Bearer access-1');
@@ -79,37 +85,37 @@ void main() {
 
   test('a new account opens a session at once, with the consent ticked at sign-up, and only then', () async {
     respond = (_) => json(pair('access-1', 'refresh-1'), 201);
-    final result = await auth.register(phone: '0700000002', password: 'secret-pass', loyaltyConsentVersion: 'fidelite-2026-10');
+    final result = await auth.register(phone: '0700000002', password: password, loyaltyConsentVersion: 'fidelite-2026-10');
     expect(result, isA<SignInSuccess>());
     expect(sent.last.url.path, '/api/auth/register');
     expect(jsonDecode(sent.last.body)['loyalty_consent_version'], 'fidelite-2026-10');
-    await auth.register(phone: '0700000002', password: 'secret-pass');
+    await auth.register(phone: '0700000002', password: password);
     expect((jsonDecode(sent.last.body) as Map).containsKey('loyalty_consent_version'), isFalse);
   });
 
   test('a number with an account but no password is claimed with the WhatsApp code', () async {
     respond = (_) => json({'message': 'Fidelia va vous envoyer un code sur WhatsApp.'}, 202);
-    final asked = await auth.register(phone: '0700000002', password: 'secret-pass');
+    final asked = await auth.register(phone: '0700000002', password: password);
     expect((asked as SignInNeedsClaim).message, startsWith('Fidelia va'));
     expect(await store.readToken(), isNull);
 
     respond = (_) => json(pair('access-1', 'refresh-1'));
-    final claimed = await auth.claim(phone: '0700000002', code: '123 456', password: 'secret-pass');
+    final claimed = await auth.claim(phone: '0700000002', code: '123 456', password: password);
     expect(claimed, isA<SignInSuccess>());
     expect(sent.last.url.path, '/api/auth/claim');
-    expect(jsonDecode(sent.last.body), {'phone': '0700000002', 'country_code': 'CI', 'code': '123456', 'password': 'secret-pass', 'app': 'customer'});
+    expect(jsonDecode(sent.last.body), {'phone': '0700000002', 'country_code': 'CI', 'code': '123456', 'password': password, 'app': 'customer'});
   });
 
   test('a wrong password shows the server\'s words and does not end anything', () async {
     respond = (_) => json({'detail': 'Numero ou mot de passe incorrect.'}, 401);
-    final result = await auth.signIn(phone: '0700000002', password: 'nope-nope');
+    final result = await auth.signIn(phone: '0700000002', password: wrongPassword);
     expect((result as SignInRejected).message, startsWith('Numero ou mot de passe'));
     expect(unauthorizedCalls, 0);
   });
 
   test('an account from before passwords is told to create its password', () async {
     respond = (_) => json({'detail': 'password_not_set'}, 409);
-    final result = await auth.signIn(phone: '0700000002', password: 'whatever1');
+    final result = await auth.signIn(phone: '0700000002', password: wrongPassword);
     expect((result as SignInRejected).message, AuthRepository.noPasswordYet);
   });
 
@@ -220,8 +226,8 @@ void main() {
           ? json({'new_phone_masked': '05 •• •• 33 44'}, 202)
           : json({...pair('new-access', 'new-refresh'), 'phone_masked': '05 •• •• 33 44'});
 
-      expect(await auth.requestNumberChange(newPhone: '0511223344', password: 'secret-pass'), '05 •• •• 33 44');
-      expect(jsonDecode(sent.first.body), {'new_phone': '0511223344', 'country_code': 'CI', 'password': 'secret-pass'});
+      expect(await auth.requestNumberChange(newPhone: '0511223344', password: password), '05 •• •• 33 44');
+      expect(jsonDecode(sent.first.body), {'new_phone': '0511223344', 'country_code': 'CI', 'password': password});
       expect(await auth.confirmNumberChange('222222'), '05 •• •• 33 44');
       expect(jsonDecode(sent.last.body), {'code': '222222'});
       expect(await store.readRefreshToken(), 'new-refresh');
@@ -231,7 +237,7 @@ void main() {
       await store.save(token: 'access', refreshToken: 'r', username: 'x');
       respond = (_) => json({'detail': 'Ce numero a deja un compte Fidelia.'}, 409);
       await expectLater(
-        auth.requestNumberChange(newPhone: '0511223344', password: 'secret-pass'),
+        auth.requestNumberChange(newPhone: '0511223344', password: password),
         throwsA(isA<AccountActionException>().having((e) => e.message, 'message', startsWith('Ce numero'))),
       );
     });
