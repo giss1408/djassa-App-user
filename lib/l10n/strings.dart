@@ -94,6 +94,9 @@ class Strings {
   static const verifyAction = 'Valider';
   static const verifyCodeMissing = 'Le code à 6 chiffres.';
   static const verifyWrongNumber = 'Ce n\'est pas mon numéro';
+  static const numberNotOnWhatsApp =
+      'Votre numéro n\'est pas sur WhatsApp : l\'équipe Fidelia ne peut pas vous envoyer le code. '
+      'Corrigez-le avec un numéro qui a WhatsApp.';
   static const verifyCorrectAction = 'Corriger le numéro';
   static const signingIn = 'Connexion…';
   static const signOut = 'Se déconnecter';
