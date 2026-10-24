@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 
-/// Phone + SMS code sign-in, session renewal, and error reporting, against a
+/// Phone + password sign-in, session renewal, and error reporting, against a
 /// stand-in for `app/api/auth.py` and `app/api/client_events.py`.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,18 +52,13 @@ void main() {
     auth = AuthRepository(client: client, tokenStore: store);
   });
 
-  test('a code is requested for this app, then exchanged for both tokens', () async {
-    respond = (r) => r.url.path == '/api/auth/otp/request'
-        ? json({'phone_masked': '07 •• •• 00 02', 'expires_in': 300, 'resend_in': 60}, 202)
-        : json(pair('access-1', 'refresh-1'));
+  test('the number and password are exchanged for both tokens', () async {
+    respond = (_) => json(pair('access-1', 'refresh-1'));
 
-    final sentCode = await auth.requestCode('07 00 00 00 02');
-    expect(sentCode, isA<CodeSent>());
-    expect(jsonDecode(sent.first.body), {'phone': '07 00 00 00 02', 'app': AuthRepository.appRole});
-
-    final result = await auth.verifyCode(phone: '07 00 00 00 02', code: '123456');
-    expect(result, isA<SignInSuccess>());
+    final result = await auth.signIn(phone: '07 00 00 00 02', password: 'secret-pass');
     expect((result as SignInSuccess).username, '07 •• •• 00 02');
+    expect(sent.single.url.path, '/api/auth/login');
+    expect(jsonDecode(sent.single.body), {'phone': '0700000002', 'country_code': 'CI', 'password': 'secret-pass', 'app': AuthRepository.appRole});
     expect(await store.readToken(), 'access-1');
     expect(await store.readRefreshToken(), 'refresh-1');
   });
@@ -76,32 +71,71 @@ void main() {
 
     // Signed in, the same call carries the token (a shop page shows my points).
     respond = (r) => json(pair('access-1', 'refresh-1'));
-    await auth.verifyCode(phone: '0700000002', code: '123456');
+    await auth.signIn(phone: '0700000002', password: 'secret-pass');
     respond = (r) => json(<Object?>[]);
     await client.getJsonList('/api/deals', optionalAuth: true);
     expect(sent.last.headers['Authorization'], 'Bearer access-1');
   });
 
-  test('the loyalty consent ticked on the sign-in screen travels with the code, and only then', () async {
-    respond = (r) => json(pair('access-1', 'refresh-1'));
-    await auth.verifyCode(phone: '0700000002', code: '123456', loyaltyConsentVersion: 'fidelite-2026-10');
+  test('a new account opens a session at once, with the consent ticked at sign-up, and only then', () async {
+    respond = (_) => json(pair('access-1', 'refresh-1'), 201);
+    final result = await auth.register(phone: '0700000002', password: 'secret-pass', loyaltyConsentVersion: 'fidelite-2026-10');
+    expect(result, isA<SignInSuccess>());
+    expect(sent.last.url.path, '/api/auth/register');
     expect(jsonDecode(sent.last.body)['loyalty_consent_version'], 'fidelite-2026-10');
-    await auth.verifyCode(phone: '0700000002', code: '123456');
+    await auth.register(phone: '0700000002', password: 'secret-pass');
     expect((jsonDecode(sent.last.body) as Map).containsKey('loyalty_consent_version'), isFalse);
   });
 
-  test('a wrong code shows the server\'s words and does not end anything', () async {
-    respond = (_) => json({'detail': 'Code incorrect ou expire. Demandez un nouveau code.'}, 401);
-    final result = await auth.verifyCode(phone: '0700000002', code: '000000');
-    expect(result, isA<SignInRejected>());
-    expect((result as SignInRejected).message, startsWith('Code incorrect'));
+  test('a number with an account but no password is claimed with the WhatsApp code', () async {
+    respond = (_) => json({'message': 'Fidelia va vous envoyer un code sur WhatsApp.'}, 202);
+    final asked = await auth.register(phone: '0700000002', password: 'secret-pass');
+    expect((asked as SignInNeedsClaim).message, startsWith('Fidelia va'));
+    expect(await store.readToken(), isNull);
+
+    respond = (_) => json(pair('access-1', 'refresh-1'));
+    final claimed = await auth.claim(phone: '0700000002', code: '123 456', password: 'secret-pass');
+    expect(claimed, isA<SignInSuccess>());
+    expect(sent.last.url.path, '/api/auth/claim');
+    expect(jsonDecode(sent.last.body), {'phone': '0700000002', 'country_code': 'CI', 'code': '123456', 'password': 'secret-pass', 'app': 'customer'});
+  });
+
+  test('a wrong password shows the server\'s words and does not end anything', () async {
+    respond = (_) => json({'detail': 'Numero ou mot de passe incorrect.'}, 401);
+    final result = await auth.signIn(phone: '0700000002', password: 'nope-nope');
+    expect((result as SignInRejected).message, startsWith('Numero ou mot de passe'));
     expect(unauthorizedCalls, 0);
   });
 
-  test('too many codes is a refusal with the server\'s words', () async {
-    respond = (_) => json({'detail': 'Patientez 42 s avant de redemander un code'}, 429);
-    final result = await auth.requestCode('0700000002');
-    expect((result as CodeRequestRefused).message, contains('42 s'));
+  test('an account from before passwords is told to create its password', () async {
+    respond = (_) => json({'detail': 'password_not_set'}, 409);
+    final result = await auth.signIn(phone: '0700000002', password: 'whatever1');
+    expect((result as SignInRejected).message, AuthRepository.noPasswordYet);
+  });
+
+  test('the WhatsApp code proves the number and stores the new session', () async {
+    await store.save(token: 'unverified', refreshToken: 'refresh-1', username: 'x');
+    respond = (_) => json(pair('verified', 'refresh-2'));
+    await auth.verifyNumber('123 456');
+    expect(sent.single.url.path, '/api/auth/verify-number');
+    expect(jsonDecode(sent.single.body), {'code': '123456'});
+    expect(await store.readToken(), 'verified');
+  });
+
+  test('a wrong WhatsApp code is a refusal, not a sign-out', () async {
+    await store.save(token: 'unverified', refreshToken: 'refresh-1', username: 'x');
+    respond = (_) => json({'detail': 'Code incorrect ou expire.'}, 401);
+    await expectLater(auth.verifyNumber('000000'), throwsA(isA<AccountActionException>()));
+    expect(sent.map((r) => r.url.path), ['/api/auth/verify-number']);
+    expect(unauthorizedCalls, 0);
+    expect(await store.readRefreshToken(), 'refresh-1');
+  });
+
+  test('a forgotten password is asked of the team without a session', () async {
+    respond = (_) => json({'message': 'Si ce numero a un compte, Fidelia vous envoie un mot de passe.'}, 202);
+    expect(await auth.requestPassword('07 00 00 00 02'), startsWith('Si ce numero'));
+    expect(jsonDecode(sent.single.body), {'phone': '0700000002', 'country_code': 'CI'});
+    expect(sent.single.headers['Authorization'], isNull);
   });
 
   test('a 401 renews the session once and replays the request', () async {
@@ -180,39 +214,35 @@ void main() {
       expect(jsonDecode(sent.single.body), {'refresh_token': 'mine'});
     });
 
-    test('a number change stores the new session', () async {
+    test('a number change asks with the password, then moves with the WhatsApp code', () async {
       await store.save(token: 'access', refreshToken: 'old-refresh', username: '07 •• •• 56 78');
       respond = (r) => r.url.path == '/api/auth/change-number/request'
-          ? json({'old_phone_masked': '07 •• •• 56 78', 'new_phone_masked': '05 •• •• 33 44', 'expires_in': 300, 'resend_in': 60}, 202)
+          ? json({'new_phone_masked': '05 •• •• 33 44'}, 202)
           : json({...pair('new-access', 'new-refresh'), 'phone_masked': '05 •• •• 33 44'});
 
-      final codes = await auth.requestNumberChange('0511223344');
-      expect(codes.newPhoneMasked, '05 •• •• 33 44');
-      final username = await auth.confirmNumberChange(newPhone: '0511223344', oldCode: '111111', newCode: '222222');
-      expect(username, '05 •• •• 33 44');
+      expect(await auth.requestNumberChange(newPhone: '0511223344', password: 'secret-pass'), '05 •• •• 33 44');
+      expect(jsonDecode(sent.first.body), {'new_phone': '0511223344', 'country_code': 'CI', 'password': 'secret-pass'});
+      expect(await auth.confirmNumberChange('222222'), '05 •• •• 33 44');
+      expect(jsonDecode(sent.last.body), {'code': '222222'});
       expect(await store.readRefreshToken(), 'new-refresh');
-      expect(jsonDecode(sent.last.body), {'new_phone': '0511223344', 'old_code': '111111', 'new_code': '222222'});
     });
 
     test('a refusal arrives in the server\'s words', () async {
       await store.save(token: 'access', refreshToken: 'r', username: 'x');
       respond = (_) => json({'detail': 'Ce numero a deja un compte Fidelia.'}, 409);
       await expectLater(
-        auth.requestNumberChange('0511223344'),
+        auth.requestNumberChange(newPhone: '0511223344', password: 'secret-pass'),
         throwsA(isA<AccountActionException>().having((e) => e.message, 'message', startsWith('Ce numero'))),
       );
     });
 
-    test('a lost-number request needs no session', () async {
-      respond = (r) => r.url.path == '/api/auth/recovery/code'
-          ? json({'phone_masked': '05 •• •• 33 44', 'expires_in': 300, 'resend_in': 60, 'dev_code': '123456'}, 202)
-          : json({'status': 'pending', 'message': 'Demande recue.'}, 202);
-
-      final code = await auth.requestRecoveryCode('0511223344');
-      expect((code as CodeSent).devCode, '123456');
-      final message = await auth.fileRecovery(newPhone: '0511223344', code: '123456', oldPhone: '0712345678', details: 'Chez Tantie Awa');
-      expect(message, 'Demande recue.');
-      expect(sent.every((r) => r.headers['Authorization'] == null), isTrue);
+    test('a lost-number request is filed from the new number\'s session', () async {
+      await store.save(token: 'access', refreshToken: 'r', username: 'x');
+      respond = (_) => json({'status': 'pending', 'message': 'Demande recue.'}, 202);
+      expect(await auth.fileRecovery(oldPhone: '0712345678', details: 'Chez Tantie Awa, Yopougon'), 'Demande recue.');
+      expect(sent.single.url.path, '/api/auth/recovery');
+      expect(jsonDecode(sent.single.body), {'old_phone': '0712345678', 'country_code': 'CI', 'details': 'Chez Tantie Awa, Yopougon'});
+      expect(sent.single.headers['Authorization'], 'Bearer access');
     });
   });
 

@@ -60,10 +60,28 @@ final suggestionsLinkProvider = FutureProvider.autoDispose<String?>((ref) async 
 
 /// Whether the customer is signed in.
 class SessionState {
-  const SessionState({required this.signedIn, this.username, this.checked = false});
+  const SessionState({
+    required this.hasSession,
+    this.username,
+    this.checked = false,
+    this.mustChangePassword = false,
+    this.numberVerified = true,
+  });
 
-  final bool signedIn;
+  /// A session is stored, usable or not yet.
+  final bool hasSession;
   final String? username;
+
+  /// Signed in with a temporary password the team sent: it must be replaced
+  /// before anything else.
+  final bool mustChangePassword;
+
+  /// False until the number is proven with a Fidelia admin's WhatsApp code.
+  final bool numberVerified;
+
+  /// A session the server accepts for everything: paying, points, account.
+  /// Until then the sign-in screen stays open on the step that is missing.
+  bool get signedIn => hasSession && numberVerified && !mustChangePassword;
 
   /// Whether the stored token has been inspected yet, so the app does not
   /// flash the sign-in screen at someone already signed in.
@@ -74,41 +92,73 @@ class SessionNotifier extends Notifier<SessionState> {
   @override
   SessionState build() {
     Future.microtask(restore);
-    return const SessionState(signedIn: false);
+    return const SessionState(hasSession: false);
   }
 
   Future<void> restore() async {
-    final auth = ref.read(authRepositoryProvider);
-    final valid = await auth.hasValidSession();
-    state = SessionState(
-      signedIn: valid,
-      username: valid ? await auth.currentUsername() : null,
+    final valid = await ref.read(authRepositoryProvider).hasValidSession();
+    state = valid ? await _stored() : const SessionState(hasSession: false, checked: true);
+  }
+
+  /// The session as the stored token describes it.
+  Future<SessionState> _stored() async {
+    final token = await ref.read(tokenStoreProvider).readToken() ?? '';
+    return SessionState(
+      hasSession: true,
+      username: await ref.read(authRepositoryProvider).currentUsername(),
       checked: true,
+      mustChangePassword: token.isNotEmpty && jwtMustChangePassword(token),
+      numberVerified: token.isEmpty || jwtNumberVerified(token),
     );
   }
 
-  Future<SignInResult> verifyCode({required String phone, required String code, String? loyaltyConsentVersion}) async {
-    final result =
-        await ref.read(authRepositoryProvider).verifyCode(phone: phone, code: code, loyaltyConsentVersion: loyaltyConsentVersion);
-    if (result is SignInSuccess) {
-      state = SessionState(signedIn: true, username: result.username, checked: true);
-    }
+  Future<SignInResult> _opened(Future<SignInResult> attempt) async {
+    final result = await attempt;
+    if (result is SignInSuccess) state = await _stored();
     return result;
+  }
+
+  Future<SignInResult> signIn({required String phone, required String password}) =>
+      _opened(ref.read(authRepositoryProvider).signIn(phone: phone, password: password));
+
+  Future<SignInResult> register({required String phone, required String password, String? loyaltyConsentVersion}) => _opened(
+      ref.read(authRepositoryProvider).register(phone: phone, password: password, loyaltyConsentVersion: loyaltyConsentVersion));
+
+  Future<SignInResult> claim({required String phone, required String code, required String password, String? loyaltyConsentVersion}) =>
+      _opened(ref
+          .read(authRepositoryProvider)
+          .claim(phone: phone, code: code, password: password, loyaltyConsentVersion: loyaltyConsentVersion));
+
+  /// Throws [AccountActionException] with the server's words.
+  Future<void> changePassword({String? current, required String newPassword}) async {
+    await ref.read(authRepositoryProvider).changePassword(current: current, newPassword: newPassword);
+    state = await _stored();
+  }
+
+  /// Throws [AccountActionException] with the server's words.
+  Future<void> verifyNumber(String code) async {
+    await ref.read(authRepositoryProvider).verifyNumber(code);
+    state = await _stored();
+  }
+
+  /// Throws [AccountActionException] with the server's words.
+  Future<void> correctNumber(String phone) async {
+    await ref.read(authRepositoryProvider).correctNumber(phone);
+    state = await _stored();
   }
 
   Future<void> signOut() async {
     await ref.read(authRepositoryProvider).signOut();
-    state = const SessionState(signedIn: false, checked: true);
+    state = const SessionState(hasSession: false, checked: true);
   }
 
-
   /// The account moved to another number; this device holds its new session.
-  void onNumberChanged(String username) {
-    state = SessionState(signedIn: true, username: username, checked: true);
+  Future<void> onNumberChanged() async {
+    state = await _stored();
   }
 
   void onTokenRejected() {
-    state = const SessionState(signedIn: false, checked: true);
+    state = const SessionState(hasSession: false, checked: true);
   }
 }
 

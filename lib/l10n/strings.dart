@@ -9,7 +9,6 @@ class Strings {
   static const signInPhoneLabel = 'Numéro de téléphone';
   static const signInPhoneHint = '07 12 34 56 78';
   static const signInPhoneMissing = 'Entrez votre numéro de téléphone.';
-  static const signInPhoneHelper = 'Vous recevrez un code par SMS.';
   // Loyalty consent (Law 2013-450, art. 14). Never pre-ticked.
   static const loyaltyConsent =
       "J'accepte que Fidelia garde mon numéro pour relier mes achats chez les commerçants partenaires (y compris mes paiements Wave) et me donner des points. Je peux retirer mon accord à tout moment dans Mon compte.";
@@ -56,12 +55,46 @@ class Strings {
   static const ribbonBonPlan = 'BON PLAN';
   static const ribbonFlash = 'FLASH';
   static const ribbonPromo = 'PROMO';
-  static const signInSendCode = 'Recevoir le code';
-  static const signInCodeSentTo = 'Code envoyé par SMS au';
-  static const signInCodeLabel = 'Code à 6 chiffres';
-  static const signInResendCode = 'Renvoyer le code';
-  static const signInChangeNumber = 'Changer de numéro';
   static const signIn = 'Se connecter';
+  static const register = 'Créer mon compte';
+  static const haveAccount = 'J\'ai déjà un compte';
+  static const noAccount = 'Pas encore de compte ? Créez-le';
+  static const signInPasswordLabel = 'Mot de passe';
+  static const signInPasswordMissing = 'Entrez votre mot de passe.';
+  static const showPassword = 'Afficher le mot de passe';
+  static const hidePassword = 'Masquer le mot de passe';
+  static const forgotPassword = 'Mot de passe oublié ?';
+  static const forgotPasswordIntro =
+      'Entrez votre numéro. L\'équipe Fidelia vous envoie un mot de passe temporaire sur WhatsApp. '
+      'Connectez-vous avec, puis choisissez le vôtre.';
+  static const forgotPasswordAction = 'Demander un mot de passe';
+  static const claimTitle = 'Ce numéro a déjà un compte';
+  static const claimCodeLabel = 'Code reçu sur WhatsApp';
+  static const claimAction = 'Valider';
+
+  // Choosing a password
+  static const passwordRule = '8 caractères minimum, pas seulement des chiffres';
+  static const passwordMismatch = 'Les deux mots de passe sont différents';
+  static const passwordCurrentMissing = 'Saisissez votre mot de passe actuel.';
+  static const choosePasswordTitle = 'Choisissez votre mot de passe';
+  static const choosePasswordIntro = 'Votre mot de passe était temporaire. Choisissez-en un qui n\'est qu\'à vous.';
+  static const changePassword = 'Changer le mot de passe';
+  static const changePasswordHint = 'Remplacez votre mot de passe actuel.';
+  static const currentPassword = 'Mot de passe actuel';
+  static const newPassword = 'Nouveau mot de passe';
+  static const confirmPassword = 'Confirmez le mot de passe';
+  static const passwordChanged = 'Mot de passe changé.';
+  static const save = 'Enregistrer';
+
+  // Proving the number
+  static const verifyTitle = 'Vérifiez votre numéro';
+  static const verifyIntro =
+      'L\'équipe Fidelia vous envoie un code à 6 chiffres sur WhatsApp, au numéro de votre compte. Saisissez-le ici.';
+  static const verifyCodeLabel = 'Code reçu sur WhatsApp';
+  static const verifyAction = 'Valider';
+  static const verifyCodeMissing = 'Le code à 6 chiffres.';
+  static const verifyWrongNumber = 'Ce n\'est pas mon numéro';
+  static const verifyCorrectAction = 'Corriger le numéro';
   static const signingIn = 'Connexion…';
   static const signOut = 'Se déconnecter';
 
@@ -76,11 +109,11 @@ class Strings {
   static const accountNumber = 'Numéro du compte';
   static const changeNumber = 'Changer de numéro';
   static const changeNumberHint = 'Gardez vos points et votre historique sur un nouveau numéro.';
-  static const changeNumberIntro = 'Il faut les deux SIM : un code arrive sur l\'ancien numéro, un autre sur le nouveau.';
+  static const changeNumberIntro =
+      'Confirmez avec votre mot de passe. L\'équipe Fidelia envoie ensuite un code sur WhatsApp au nouveau numéro.';
   static const newPhone = 'Nouveau numéro';
-  static const sendCodes = 'Recevoir les codes';
-  static const oldNumberCode = 'Code reçu sur l\'ancien numéro';
-  static const newNumberCode = 'Code reçu sur le nouveau numéro';
+  static const sendCodes = 'Demander le code';
+  static const newNumberCode = 'Code reçu sur WhatsApp au';
   static const confirmChange = 'Changer de numéro';
   static const numberChanged = 'Votre compte est maintenant sur le';
   static const signOutOthers = 'Déconnecter les autres téléphones';
@@ -96,13 +129,21 @@ class Strings {
   static const accountDeleted = 'Votre compte est supprimé.';
   static const lostNumber = 'Numéro perdu ?';
   static const lostNumberTitle = 'Récupérer mon compte';
-  static const lostNumberIntro = 'Votre ancien numéro ne marche plus ? Vérifiez votre nouveau numéro, puis dites-nous qui vous êtes. Fidelia vérifie et transfère votre compte.';
+  static const lostNumberIntro =
+      'Votre ancien numéro ne marche plus ? Créez un compte avec votre nouveau numéro et faites-le vérifier. '
+      'Puis, dans Mon compte, « Récupérer mon ancien compte » : dites-nous qui vous êtes, Fidelia vérifie et transfère vos points.';
+  static const recoverAccount = 'Récupérer mon ancien compte';
+  static const recoverAccountHint = 'Votre ancien numéro ne marche plus : transférez ses points ici.';
+  static const recoverAccountIntro =
+      'Donnez votre ancien numéro et de quoi vous reconnaître. Une personne de Fidelia vérifie et transfère votre compte sur ce numéro.';
+  static const recoveryDetailsMissing = 'Écrivez au moins quelques mots pour qu\'on vous reconnaisse.';
   static const oldPhone = 'Ancien numéro';
   static const recoveryDetails = 'Pour vous reconnaître';
   static const recoveryDetailsHint = 'Votre nom, les maquis ou pharmacies où vous gagnez des points, votre dernier achat…';
   static const sendRequest = 'Envoyer la demande';
   static const requestSent = 'Demande envoyée';
   static const backToSignIn = 'Retour à la connexion';
+  static const back = 'Retour';
   static const continueLabel = 'Continuer';
 
   // Navigation

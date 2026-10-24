@@ -7,11 +7,16 @@ import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'about_name_screen.dart';
+import 'password_screens.dart';
 import 'phone_sign_in_form.dart';
 
-/// Sign-in with a phone number and an SMS code. The number is the customer's
+/// Sign-in with a phone number and a password. The number is the customer's
 /// account (CONCEPT.md, Tier 0), and the same key the counter uses for
-/// loyalty, so points earned at a counter are there on first sign-in.
+/// loyalty, so points earned at a counter are there once it is verified.
+///
+/// With a session open but not yet usable, it shows the missing step
+/// instead: the WhatsApp code that proves the number, or a new password in
+/// place of a temporary one.
 ///
 /// Opened over the app when the customer wants to pay or see their points
 /// (sign_in_gate.dart), with [reason] saying why; it closes itself once the
@@ -27,6 +32,9 @@ class SignInScreen extends ConsumerWidget {
     ref.listen(sessionProvider.select((s) => s.signedIn), (_, signedIn) {
       if (signedIn && Navigator.of(context).canPop()) Navigator.of(context).pop(true);
     });
+    final session = ref.watch(sessionProvider);
+    if (session.hasSession && session.mustChangePassword) return const ChangePasswordScreen(forced: true);
+    if (session.hasSession && !session.numberVerified) return const VerifyNumberScreen();
 
     return Scaffold(
       appBar: Navigator.of(context).canPop()

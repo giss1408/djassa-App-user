@@ -105,17 +105,29 @@ class TokenStore {
 /// expired one is renewed with the refresh token before the request is sent,
 /// so the user signs in again only after 90 days without opening the app.
 DateTime? jwtExpiry(String token) {
+  final exp = _jwtClaims(token)?['exp'];
+  if (exp is! int) return null;
+  return DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
+}
+
+/// Whether the token carries the `pc` (password change required) claim, set
+/// while the account still uses a temporary password. Same caveat as
+/// [jwtExpiry]: it only decides what the app shows; the server enforces it.
+bool jwtMustChangePassword(String token) => _jwtClaims(token)?['pc'] == true;
+
+/// Whether the number is proven (`vf`). Until a Fidelia admin's WhatsApp code
+/// is typed in, the server answers `403 number_not_verified` to everything
+/// else. Tokens without the claim predate it and count as verified.
+bool jwtNumberVerified(String token) => _jwtClaims(token)?['vf'] != false;
+
+Map<Object?, Object?>? _jwtClaims(String token) {
   final parts = token.split('.');
   if (parts.length != 3) return null;
   try {
-    final payload = parts[1];
     // base64url without padding, which Dart's decoder requires.
-    final normalized = base64Url.normalize(payload);
+    final normalized = base64Url.normalize(parts[1]);
     final decoded = jsonDecode(utf8.decode(base64Url.decode(normalized)));
-    if (decoded is! Map) return null;
-    final exp = decoded['exp'];
-    if (exp is! int) return null;
-    return DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
+    return decoded is Map ? decoded : null;
   } on Exception {
     return null;
   }
