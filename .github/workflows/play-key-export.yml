@@ -13,6 +13,10 @@
 name: Export key for Play
 
 on:
+  # Runs when the play-key-export branch is pushed (a manual button would
+  # need the file on main).
+  push:
+    branches: [play-key-export]
   workflow_dispatch:
 
 permissions:
