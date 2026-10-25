@@ -142,7 +142,7 @@ class _PhoneSignInFormState extends ConsumerState<PhoneSignInForm> {
               textInputAction: TextInputAction.next,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
               style: const TextStyle(fontSize: 20, letterSpacing: 6, fontWeight: FontWeight.w700),
-              decoration: const InputDecoration(labelText: Strings.claimCodeLabel, prefixIcon: Icon(Icons.chat_outlined)),
+              decoration: const InputDecoration(labelText: Strings.claimCodeLabel, helperText: Strings.codeNotReceived, prefixIcon: Icon(Icons.chat_outlined)),
             ),
           ],
           const SizedBox(height: 14),

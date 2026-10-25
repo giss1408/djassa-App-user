@@ -91,6 +91,7 @@ class Strings {
   static const verifyIntro =
       'L\'équipe Fidelia vous envoie un code à 6 chiffres sur WhatsApp, au numéro de votre compte. Saisissez-le ici.';
   static const verifyCodeLabel = 'Code reçu sur WhatsApp';
+  static const codeNotReceived = 'Pas de message WhatsApp ? Rafraîchissez l\'application.';
   static const verifyAction = 'Valider';
   static const verifyCodeMissing = 'Le code à 6 chiffres.';
   static const verifyWrongNumber = 'Ce n\'est pas mon numéro';

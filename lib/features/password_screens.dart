@@ -252,7 +252,7 @@ class _VerifyNumberScreenState extends ConsumerState<VerifyNumberScreen> {
             },
             onSubmitted: (_) => _submit(),
             style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.w700),
-            decoration: const InputDecoration(labelText: Strings.verifyCodeLabel, prefixIcon: Icon(Icons.chat_outlined)),
+            decoration: const InputDecoration(labelText: Strings.verifyCodeLabel, helperText: Strings.codeNotReceived, prefixIcon: Icon(Icons.chat_outlined)),
           ),
           ErrorLine(_error),
           const SizedBox(height: 24),

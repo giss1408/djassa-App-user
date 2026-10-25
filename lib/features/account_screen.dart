@@ -290,7 +290,7 @@ class _ChangeNumberScreenState extends ConsumerState<ChangeNumberScreen> {
               autofillHints: const [AutofillHints.oneTimeCode],
               inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
               style: const TextStyle(fontSize: 20, letterSpacing: 6, fontWeight: FontWeight.w700),
-              decoration: InputDecoration(labelText: '${Strings.newNumberCode} $sentTo', prefixIcon: const Icon(Icons.chat_outlined)),
+              decoration: InputDecoration(labelText: '${Strings.newNumberCode} $sentTo', helperText: Strings.codeNotReceived, prefixIcon: const Icon(Icons.chat_outlined)),
             ),
           ],
           ErrorLine(_error),
