@@ -152,7 +152,6 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             onChanged: (_busy || _consent == null) ? null : _setConsent,
           ),
           const Divider(),
-          if (!Env.authMode) ...[
           ListTile(
             leading: const Icon(Icons.swap_horiz_rounded),
             title: const Text(Strings.changeNumber),
@@ -160,14 +159,15 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             enabled: !_busy,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'change_number'), builder: (_) => const ChangeNumberScreen())),
           ),
-          ListTile(
+          // A lost number is reviewed by a fidelia admin: not at the auth service yet.
+          if (!Env.authMode)
+            ListTile(
             leading: const Icon(Icons.history_rounded),
             title: const Text(Strings.recoverAccount),
             subtitle: const Text(Strings.recoverAccountHint),
             enabled: !_busy,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'recover_account'), builder: (_) => const RecoverAccountScreen())),
           ),
-          ],
           ListTile(
             leading: const Icon(Icons.password_rounded),
             title: const Text(Strings.changePassword),
