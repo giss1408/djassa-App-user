@@ -25,6 +25,13 @@ class Env {
     defaultValue: 'http://10.0.2.2:8000',
   );
 
+  /// Base URL of the platform auth service (SSO), no trailing slash. Empty (default) keeps fidelia's own sign-in. With it the app
+  /// signs in, signs up, renews and resets the password at the auth service, and fidelia accepts the tokens it issues.
+  /// Local: --dart-define=FIDELIA_AUTH_BASE=http://10.0.2.2:8080
+  static const String authBase = String.fromEnvironment('FIDELIA_AUTH_BASE');
+
+  static bool get authMode => authBase.isNotEmpty;
+
   /// Sign-in prefill for development, e.g.
   ///   --dart-define=FIDELIA_DEV_PHONE=0712345678
   /// Empty unless passed, and ignored in a release build, so no number can

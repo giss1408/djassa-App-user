@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/auth/auth_repository.dart';
+import '../core/config/env.dart';
 import '../core/net/api_exception.dart';
 import '../core/providers.dart';
 import '../l10n/strings.dart';
@@ -151,6 +152,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             onChanged: (_busy || _consent == null) ? null : _setConsent,
           ),
           const Divider(),
+          if (!Env.authMode) ...[
           ListTile(
             leading: const Icon(Icons.swap_horiz_rounded),
             title: const Text(Strings.changeNumber),
@@ -165,6 +167,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             enabled: !_busy,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'recover_account'), builder: (_) => const RecoverAccountScreen())),
           ),
+          ],
           ListTile(
             leading: const Icon(Icons.password_rounded),
             title: const Text(Strings.changePassword),
@@ -172,13 +175,14 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             enabled: !_busy,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(settings: const RouteSettings(name: 'change_password'), builder: (_) => const ChangePasswordScreen(forced: false))),
           ),
-          ListTile(
-            leading: const Icon(Icons.phonelink_erase_rounded),
-            title: const Text(Strings.signOutOthers),
-            subtitle: const Text(Strings.signOutOthersHint),
-            enabled: !_busy,
-            onTap: _signOutOthers,
-          ),
+          if (!Env.authMode)
+            ListTile(
+              leading: const Icon(Icons.phonelink_erase_rounded),
+              title: const Text(Strings.signOutOthers),
+              subtitle: const Text(Strings.signOutOthersHint),
+              enabled: !_busy,
+              onTap: _signOutOthers,
+            ),
           const Divider(),
           ListTile(
             leading: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),

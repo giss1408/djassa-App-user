@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'auth/auth_repository.dart';
+import 'config/env.dart';
 import 'auth/token_store.dart';
 import 'fidelia_api.dart';
 import 'monitoring/usage_tracker.dart';
@@ -38,10 +39,19 @@ final Provider<ApiClient> apiClientProvider = Provider<ApiClient>((ref) {
   return client;
 });
 
+/// The platform auth service (SSO), or null while the build has no FIDELIA_AUTH_BASE (fidelia's own sign-in then).
+final Provider<ApiClient?> authServiceClientProvider = Provider<ApiClient?>((ref) {
+  if (!Env.authMode) return null;
+  final client = ApiClient(tokenProvider: () async => ref.read(tokenStoreProvider).readToken(), baseUrl: Env.authBase);
+  ref.onDispose(client.close);
+  return client;
+});
+
 final Provider<AuthRepository> authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     client: ref.watch(apiClientProvider),
     tokenStore: ref.watch(tokenStoreProvider),
+    authClient: ref.watch(authServiceClientProvider),
   );
 });
 

@@ -61,9 +61,25 @@ class SignInNeedsClaim extends SignInResult {
 /// Fidelia admin sends a code on WhatsApp ([verifyNumber]), and until then the
 /// server refuses everything else.
 class AuthRepository {
-  AuthRepository({required ApiClient client, required TokenStore tokenStore})
+  AuthRepository({required ApiClient client, required TokenStore tokenStore, ApiClient? authClient})
       : _client = client,
-        _tokenStore = tokenStore;
+        _tokenStore = tokenStore,
+        _auth = authClient;
+
+  /// The platform auth service (SSO) when set: sign-in, sign-up with the WhatsApp activation code, renewal, sign-out, forgotten
+  /// password and password change go there; fidelia only receives the access token it issued. Null = fidelia's own sign-in.
+  final ApiClient? _auth;
+
+  bool get authMode => _auth != null;
+
+  static const _product = 'fidelia';
+
+  /// The temporary password just typed, in memory only, so the forced "new password" step can send it as the current one.
+  String? _signInPassword;
+
+  /// Shown after sign-up in auth mode: the account waits for the code a Fidelia admin sends on WhatsApp.
+  static const activationPending =
+      'Compte créé. L\'équipe Fidelia vous envoie un code sur WhatsApp : saisissez-le ici pour activer votre compte.';
 
   /// The session this app opens.
   /// Anyone with a number gets one.
@@ -95,24 +111,30 @@ class AuthRepository {
   static const noPasswordYet = 'Ce numéro n\'a pas encore de mot de passe. Créez votre compte avec ce numéro.';
 
   /// Exchanges the number and password for a session.
-  Future<SignInResult> signIn({required String phone, required String password}) => _signIn(
-        '/api/auth/login',
-        {'phone': _digits(phone), 'country_code': 'CI', 'password': password, 'app': appRole},
-      );
+  Future<SignInResult> signIn({required String phone, required String password}) {
+    if (_auth != null) return _authSignIn(phone, password);
+    return _signIn(
+      '/api/auth/login',
+      {'phone': _digits(phone), 'country_code': 'CI', 'password': password, 'app': appRole},
+    );
+  }
 
   /// Creates the account and opens its session, not yet verified. A number
   /// that already has an account without a password answers
   /// [SignInNeedsClaim] instead.
-  Future<SignInResult> register({required String phone, required String password, String? loyaltyConsentVersion}) => _signIn(
-        '/api/auth/register',
-        {
-          'phone': _digits(phone),
-          'country_code': 'CI',
-          'password': password,
-          'app': appRole,
-          if (loyaltyConsentVersion != null) 'loyalty_consent_version': loyaltyConsentVersion,
-        },
-      );
+  Future<SignInResult> register({required String phone, required String password, String? loyaltyConsentVersion}) {
+    if (_auth != null) return _authRegister(phone, password);
+    return _signIn(
+      '/api/auth/register',
+      {
+        'phone': _digits(phone),
+        'country_code': 'CI',
+        'password': password,
+        'app': appRole,
+        if (loyaltyConsentVersion != null) 'loyalty_consent_version': loyaltyConsentVersion,
+      },
+    );
+  }
 
   /// Sets the first password of an existing account with the code the team
   /// sent on WhatsApp after [register] answered [SignInNeedsClaim].
@@ -121,18 +143,20 @@ class AuthRepository {
     required String code,
     required String password,
     String? loyaltyConsentVersion,
-  }) =>
-      _signIn(
-        '/api/auth/claim',
-        {
-          'phone': _digits(phone),
-          'country_code': 'CI',
-          'code': code.replaceAll(' ', ''),
-          'password': password,
-          'app': appRole,
-          if (loyaltyConsentVersion != null) 'loyalty_consent_version': loyaltyConsentVersion,
-        },
-      );
+  }) {
+    if (_auth != null) return _authActivate(phone, code, password, loyaltyConsentVersion);
+    return _signIn(
+      '/api/auth/claim',
+      {
+        'phone': _digits(phone),
+        'country_code': 'CI',
+        'code': code.replaceAll(' ', ''),
+        'password': password,
+        'app': appRole,
+        if (loyaltyConsentVersion != null) 'loyalty_consent_version': loyaltyConsentVersion,
+      },
+    );
+  }
 
   Future<SignInResult> _signIn(String path, Map<String, Object?> body) async {
     try {
@@ -157,6 +181,11 @@ class AuthRepository {
   /// Returns the server's answer, which never says whether the number has an
   /// account.
   Future<String> requestPassword(String phone) => _action(() async {
+        final auth = _auth;
+        if (auth != null) {
+          final body = await auth.postJson('/v1/password/reset-request', body: {'phone': _digits(phone), 'product': _product}, authenticated: false);
+          return body['message'] as String? ?? 'Si ce numéro a un compte, l\'équipe Fidelia vous envoie un mot de passe temporaire sur WhatsApp.';
+        }
         final body = await _client.postJson(
           '/api/auth/password-reset',
           body: {'phone': _digits(phone), 'country_code': 'CI'},
@@ -169,6 +198,21 @@ class AuthRepository {
   /// temporary password. The server's new token pair replaces the stored
   /// one, which no longer carries the `pc` claim.
   Future<void> changePassword({String? current, required String newPassword}) => _action(() async {
+        final auth = _auth;
+        if (auth != null) {
+          final currentPassword = current ?? _signInPassword;
+          if (currentPassword == null) throw const AccountActionException('Saisissez votre mot de passe actuel.');
+          try {
+            await auth.postJson('/v1/password/change',
+                body: {'current_password': currentPassword, 'new_password': newPassword}, unauthorizedEndsSession: false);
+          } on ClientErrorException catch (e) {
+            throw AccountActionException(e.detail == 'invalid_credentials' ? 'Mot de passe actuel incorrect.' : _detail(e));
+          }
+          _signInPassword = null;
+          // The change itself returns no token: renew, which issues one without the "must change" mark.
+          if (!await refresh()) throw const AccountActionException(_unusable);
+          return;
+        }
         final body = await _client.postJson(
           '/api/auth/password',
           body: {if (current != null) 'current': current, 'new': newPassword},
@@ -181,6 +225,7 @@ class AuthRepository {
   /// Whether the team turned the number down: it is not on WhatsApp, so no
   /// code can reach it. False when the server cannot say.
   Future<bool> numberRefused() async {
+    if (_auth != null) return false;
     try {
       final body = await _client.getJson('/api/auth/me');
       return body['number_refused'] == true;
@@ -192,6 +237,7 @@ class AuthRepository {
   /// Proves the number with the code a Fidelia admin sent on WhatsApp. The
   /// new session carries `vf`; every other session on the account ends.
   Future<void> verifyNumber(String code) => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final body = await _client.postJson(
           '/api/auth/verify-number',
           body: {'code': code.replaceAll(' ', '')},
@@ -203,6 +249,7 @@ class AuthRepository {
   /// Fixes a number mistyped at sign-up, before it was ever verified. The
   /// team then checks the new one.
   Future<void> correctNumber(String phone) => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final body = await _client.postJson(
           '/api/auth/number',
           body: {'phone': _digits(phone), 'country_code': 'CI'},
@@ -210,6 +257,98 @@ class AuthRepository {
         );
         if (!await _store(body)) throw const AccountActionException(_unusable);
       });
+
+  static const _unavailableInAuth = 'Cette action n\'est pas encore disponible avec ce mode de connexion. Contactez l\'équipe Fidelia.';
+
+  // --- Sign-in through the platform auth service ----------------------------
+
+  Future<SignInResult> _authSignIn(String phone, String password) async {
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    try {
+      final body = await _auth!.postJson(
+        '/v1/login',
+        body: {'phone': _digits(phone), 'password': password, 'product': _product, 'app': appRole},
+        authenticated: false,
+      );
+      if (!await _store(body, username: maskPhone(digits))) return const SignInUnavailable(_unusable);
+      _signInPassword = body['must_change_password'] == true ? password : null;
+      return SignInSuccess(await currentUsername() ?? '');
+    } on ClientErrorException catch (error) {
+      return SignInRejected(_authMessage(error));
+    } on ServerErrorException {
+      return const SignInUnavailable('Le serveur est indisponible');
+    } on NetworkException catch (error) {
+      return SignInUnavailable(error.message);
+    } on ApiException catch (error) {
+      return SignInUnavailable(error.message);
+    }
+  }
+
+  /// Sign-up at auth: no session yet. The account waits for the code a Fidelia admin sends on WhatsApp (see [claim]).
+  Future<SignInResult> _authRegister(String phone, String password) async {
+    try {
+      await _auth!.postJson(
+        '/v1/register',
+        body: {'phone': _digits(phone), 'password': password, 'product': _product, 'consent': true},
+        authenticated: false,
+      );
+      return const SignInNeedsClaim(activationPending);
+    } on ClientErrorException catch (error) {
+      return SignInRejected(_authMessage(error));
+    } on ServerErrorException {
+      return const SignInUnavailable('Le serveur est indisponible');
+    } on NetworkException catch (error) {
+      return SignInUnavailable(error.message);
+    } on ApiException catch (error) {
+      return SignInUnavailable(error.message);
+    }
+  }
+
+  /// Activates with the WhatsApp code, signs in with the password chosen at sign-up, and records the loyalty consent ticked at
+  /// sign-up (a fidelia setting, kept in fidelia).
+  Future<SignInResult> _authActivate(String phone, String code, String password, String? loyaltyConsentVersion) async {
+    try {
+      await _auth!.postJson('/v1/activate', body: {'phone': _digits(phone), 'code': code.replaceAll(' ', '')}, authenticated: false);
+    } on ClientErrorException catch (error) {
+      return SignInRejected(_authMessage(error));
+    } on ServerErrorException {
+      return const SignInUnavailable('Le serveur est indisponible');
+    } on NetworkException catch (error) {
+      return SignInUnavailable(error.message);
+    } on ApiException catch (error) {
+      return SignInUnavailable(error.message);
+    }
+    final result = await _authSignIn(phone, password);
+    if (result is SignInSuccess && loyaltyConsentVersion != null) {
+      try {
+        await _client.putJson('/api/customer/loyalty-consent', body: {'consent_version': loyaltyConsentVersion});
+      } on ApiException {
+        // Not fatal: the switch in the account screen offers it again.
+      }
+    }
+    return result;
+  }
+
+  static String _authMessage(ClientErrorException error) => switch (error.detail) {
+        'invalid_credentials' => 'Numéro ou mot de passe incorrect.',
+        'not_activated' => 'Ce compte n\'est pas encore activé : saisissez le code envoyé par l\'équipe Fidelia sur WhatsApp.',
+        'account_blocked' => 'Ce compte est suspendu. Contactez Fidelia.',
+        'no_access_to_app' => 'Ce numéro n\'a pas accès à cette application.',
+        'login_locked' => 'Trop d\'essais. Réessayez dans 15 minutes.',
+        'temp_password_expired' => 'Ce mot de passe temporaire a expiré. Demandez-en un nouveau.',
+        'rate_limited' => 'Trop de tentatives. Réessayez dans quelques minutes.',
+        'phone_taken' => 'Ce numéro a déjà un compte : connectez-vous, ou demandez un nouveau mot de passe.',
+        'wrong_activation_code' => 'Code incorrect ou expiré.',
+        'weak_password' => 'Mot de passe trop simple : choisissez-en un autre.',
+        final String other => other,
+        _ => error.message,
+      };
+
+  /// "07 •• •• 03 04" from the digits typed, the way the account name is shown.
+  static String maskPhone(String digits) {
+    final d = digits.length > 10 ? digits.substring(digits.length - 10) : digits;
+    return d.length < 10 ? '•• •• ••' : '${d.substring(0, 2)} •• •• ${d.substring(6, 8)} ${d.substring(8, 10)}';
+  }
 
   static String _digits(String phone) => phone.replaceAll(RegExp(r'\s+'), '');
 
@@ -229,25 +368,25 @@ class AuthRepository {
     final refreshToken = await _tokenStore.readRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) return false;
     try {
-      final body = await _client.postJson(
-        '/api/auth/refresh',
+      final body = await (_auth ?? _client).postJson(
+        _auth != null ? '/v1/refresh' : '/api/auth/refresh',
         body: {'refresh_token': refreshToken},
         authenticated: false,
       );
-      return _store(body);
+      return _store(body, username: await currentUsername());
     } on ClientErrorException {
       return false;
     }
   }
 
-  Future<bool> _store(Map<String, Object?> body) async {
+  Future<bool> _store(Map<String, Object?> body, {String? username}) async {
     final access = body['access_token'];
     final refresh = body['refresh_token'];
     if (access is! String || access.isEmpty || refresh is! String || refresh.isEmpty) return false;
     await _tokenStore.save(
       token: access,
       refreshToken: refresh,
-      username: body['phone_masked'] as String? ?? '',
+      username: body['phone_masked'] as String? ?? username ?? '',
     );
     return true;
   }
@@ -257,9 +396,10 @@ class AuthRepository {
   /// the last access token expires within the hour.
   Future<void> signOut() async {
     final refreshToken = await _tokenStore.readRefreshToken();
+    _signInPassword = null;
     if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
-        await _client.postJson('/api/auth/logout', body: {'refresh_token': refreshToken}, authenticated: false);
+        await (_auth ?? _client).postJson(_auth != null ? '/v1/logout' : '/api/auth/logout', body: {'refresh_token': refreshToken}, authenticated: false);
       } on ApiException {
         // Best effort; the local wipe below is what matters on this device.
       }
@@ -272,6 +412,7 @@ class AuthRepository {
   /// Ends every session but this device's: a lost or stolen phone that is
   /// still signed in loses access within the hour. Returns how many ended.
   Future<int> revokeOtherSessions() => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final refreshToken = await _tokenStore.readRefreshToken();
         final body = await _client.postJson(
           '/api/auth/sessions/revoke-others',
@@ -285,6 +426,7 @@ class AuthRepository {
   /// the person: a phone left unlocked must not be enough to move the
   /// account. Returns the masked new number.
   Future<String> requestNumberChange({required String newPhone, required String password}) => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final body = await _client.postJson(
           '/api/auth/change-number/request',
           body: {'new_phone': newPhone, 'country_code': 'CI', 'password': password},
@@ -297,6 +439,7 @@ class AuthRepository {
   /// The server ends every other session and returns a new one for this
   /// device, stored here. Returns the masked new number.
   Future<String> confirmNumberChange(String code) => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final body = await _client.postJson(
           '/api/auth/change-number/confirm',
           body: {'code': code.replaceAll(' ', '')},
@@ -310,6 +453,7 @@ class AuthRepository {
   /// request a Fidelia admin reviews. Returns the server's message saying
   /// what happens next.
   Future<String> fileRecovery({required String oldPhone, required String details}) => _action(() async {
+        if (_auth != null) throw const AccountActionException(_unavailableInAuth);
         final body = await _client.postJson(
           '/api/auth/recovery',
           body: {'old_phone': oldPhone, 'country_code': 'CI', 'details': details},
